@@ -12,10 +12,11 @@ export default function DrawingCanvas() {
   const containerRef = useRef<HTMLDivElement>(null)
   const [size, setSize] = useState({ width: 600, height: 400 })
   const [cursor, setCursor] = useState<Point | null>(null)
+  const [rawPos, setRawPos] = useState<{ x: number; y: number } | null>(null)
 
   const {
-    points, snapEnabled, pxPerMeter, floorPts,
-    addPoint, updatePoint, removeLastPoint, clearPoints, toggleSnap,
+    points, isClosed, snapEnabled, pxPerMeter, floorPts,
+    addPoint, updatePoint, removeLastPoint, clearPoints, toggleSnap, closePolygon,
   } = usePondStore()
 
   useEffect(() => {
@@ -46,34 +47,44 @@ export default function DrawingCanvas() {
   function handleStageClick(e: KonvaEventObject<MouseEvent>) {
     const pos = e.target.getStage()?.getPointerPosition()
     if (!pos) return
-    const real = snap(toReal(pos.x, pos.y))
+    if (isClosed) return
 
     if (points.length >= 3) {
       const { x: fx, y: fy } = toScreen(points[0])
-      if (Math.hypot(pos.x - fx, pos.y - fy) < 14) return // close polygon
+      if (Math.hypot(pos.x - fx, pos.y - fy) < 14) {
+        closePolygon()
+        return
+      }
     }
-    addPoint(real)
+    addPoint(snap(toReal(pos.x, pos.y)))
   }
 
   function handleMouseMove(e: KonvaEventObject<MouseEvent>) {
     const pos = e.target.getStage()?.getPointerPosition()
     if (!pos) return
+    setRawPos(pos)
     setCursor(snap(toReal(pos.x, pos.y)))
   }
 
   const lastPt = points.at(-1)
   const distToCursor =
-    lastPt && cursor
+    !isClosed && lastPt && cursor
       ? Math.sqrt((cursor.x - lastPt.x) ** 2 + (cursor.y - lastPt.y) ** 2)
       : null
+
+  // highlight first point when cursor is within snap radius (px-based)
+  const nearFirst =
+    !isClosed && points.length >= 3 && rawPos
+      ? Math.hypot(rawPos.x - toScreen(points[0]).x, rawPos.y - toScreen(points[0]).y) < 14
+      : false
 
   const toFlat = (pts: Point[]) => pts.flatMap(p => [toScreen(p).x, toScreen(p).y])
 
   const lineFlat = toFlat(points)
-  const closedFlat =
-    points.length >= 3 ? [...lineFlat, lineFlat[0], lineFlat[1]] : lineFlat
+  // open polyline while drawing; closed fill only after isClosed
+  const polyFlat = isClosed ? [...lineFlat, lineFlat[0], lineFlat[1]] : lineFlat
   const cursorFlat =
-    lastPt && cursor
+    !isClosed && lastPt && cursor
       ? [toScreen(lastPt).x, toScreen(lastPt).y, toScreen(cursor).x, toScreen(cursor).y]
       : []
 
@@ -116,13 +127,13 @@ export default function DrawingCanvas() {
         </button>
       </div>
 
-      <div ref={containerRef} className="flex-1 overflow-hidden cursor-crosshair">
+      <div ref={containerRef} className={`flex-1 overflow-hidden ${isClosed ? 'cursor-default' : 'cursor-crosshair'}`}>
         <Stage
           width={size.width}
           height={size.height}
           onClick={handleStageClick}
           onMouseMove={handleMouseMove}
-          onMouseLeave={() => setCursor(null)}
+          onMouseLeave={() => { setCursor(null); setRawPos(null) }}
         >
           {/* Grid */}
           <Layer listening={false}>
@@ -139,13 +150,15 @@ export default function DrawingCanvas() {
           </Layer>
 
           <Layer>
-            {/* Top polygon fill + outline */}
-            {points.length >= 3 && (
-              <Line points={closedFlat} closed fill="rgba(14,165,233,0.07)"
-                stroke="#0ea5e9" strokeWidth={1.5} />
-            )}
-            {points.length >= 1 && points.length < 3 && (
-              <Line points={lineFlat} stroke="#0ea5e9" strokeWidth={1.5} />
+            {/* Top polygon — fill only when closed, open polyline while drawing */}
+            {points.length >= 1 && (
+              <Line
+                points={polyFlat}
+                closed={isClosed}
+                fill={isClosed ? 'rgba(14,165,233,0.07)' : undefined}
+                stroke="#0ea5e9"
+                strokeWidth={1.5}
+              />
             )}
 
             {/* Floor polygon (dashed) */}
@@ -172,10 +185,15 @@ export default function DrawingCanvas() {
             {/* Point handles */}
             {points.map((p, i) => {
               const s = toScreen(p)
+              const isFirst = i === 0
+              const highlight = isFirst && nearFirst
               return (
-                <Circle key={i} x={s.x} y={s.y} radius={5}
-                  fill={i === 0 ? '#16a34a' : '#0ea5e9'}
-                  stroke="white" strokeWidth={1.5} draggable
+                <Circle key={i} x={s.x} y={s.y}
+                  radius={highlight ? 8 : 5}
+                  fill={isFirst ? '#16a34a' : '#0ea5e9'}
+                  stroke={highlight ? '#4ade80' : 'white'}
+                  strokeWidth={highlight ? 2.5 : 1.5}
+                  draggable={!nearFirst || !isFirst}
                   onDragMove={(e) =>
                     updatePoint(i, snap(toReal(e.target.x(), e.target.y())))
                   }

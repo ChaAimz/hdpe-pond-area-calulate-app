@@ -6,6 +6,7 @@ import { calculateHdpe, slopeRatioToDegrees, slopeDegreesToRatio } from '../lib/
 
 interface PondState {
   points: Point[]
+  isClosed: boolean
   snapEnabled: boolean
   pxPerMeter: number
 
@@ -21,6 +22,7 @@ interface PondState {
   updatePoint: (index: number, p: Point) => void
   removeLastPoint: () => void
   clearPoints: () => void
+  closePolygon: () => void
   toggleSnap: () => void
   setSlopeRatio: (ratio: number) => void
   setSlopeDegrees: (degrees: number) => void
@@ -44,6 +46,7 @@ function recompute(
 
 export const usePondStore = create<PondState>((set, get) => ({
   points: [],
+  isClosed: false,
   snapEnabled: true,
   pxPerMeter: 40,
 
@@ -55,9 +58,16 @@ export const usePondStore = create<PondState>((set, get) => ({
   result: null,
 
   addPoint: (p) => {
-    const { points, depth, slope, hdpePreset, overlapPercent } = get()
+    const { points, isClosed, depth, slope, hdpePreset, overlapPercent } = get()
+    if (isClosed) return
     const next = [...points, p]
     set({ points: next, ...recompute(next, depth, slope, hdpePreset, overlapPercent) })
+  },
+
+  closePolygon: () => {
+    const { points, depth, slope, hdpePreset, overlapPercent } = get()
+    if (points.length < 3) return
+    set({ isClosed: true, ...recompute(points, depth, slope, hdpePreset, overlapPercent) })
   },
 
   updatePoint: (index, p) => {
@@ -69,10 +79,10 @@ export const usePondStore = create<PondState>((set, get) => ({
   removeLastPoint: () => {
     const { points, depth, slope, hdpePreset, overlapPercent } = get()
     const next = points.slice(0, -1)
-    set({ points: next, ...recompute(next, depth, slope, hdpePreset, overlapPercent) })
+    set({ points: next, isClosed: false, ...recompute(next, depth, slope, hdpePreset, overlapPercent) })
   },
 
-  clearPoints: () => set({ points: [], floorPts: [], result: null }),
+  clearPoints: () => set({ points: [], isClosed: false, floorPts: [], result: null }),
   toggleSnap: () => set((s) => ({ snapEnabled: !s.snapEnabled })),
 
   setSlopeRatio: (ratio) => {
