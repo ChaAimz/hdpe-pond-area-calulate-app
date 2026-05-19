@@ -1,6 +1,6 @@
 import type { Point } from '../types'
 
-export function signedArea(pts: Point[]): number {
+function signedArea(pts: Point[]): number {
   let area = 0
   const n = pts.length
   for (let i = 0; i < n; i++) {
