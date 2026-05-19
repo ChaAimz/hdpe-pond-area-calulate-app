@@ -1,0 +1,119 @@
+<h2>สไตล์การแสดงผล 3D ของบ่อน้ำ</h2>
+<p class="subtitle">เลือกลักษณะการ render 3D ที่ต้องการ</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#0f172a;border-radius:8px;padding:16px;height:140px;display:flex;align-items:center;justify-content:center;">
+        <svg viewBox="0 0 200 120" width="200" height="120">
+          <!-- Three.js style realistic 3D pond -->
+          <defs>
+            <linearGradient id="wallGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#60a5fa"/>
+              <stop offset="100%" stop-color="#1d4ed8"/>
+            </linearGradient>
+            <linearGradient id="floorGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#1e40af"/>
+              <stop offset="100%" stop-color="#1e3a8a"/>
+            </linearGradient>
+            <linearGradient id="slopeGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#93c5fd"/>
+              <stop offset="100%" stop-color="#3b82f6"/>
+            </linearGradient>
+          </defs>
+          <!-- Floor -->
+          <polygon points="60,85 140,85 155,100 45,100" fill="url(#floorGrad)" stroke="#3b82f6" stroke-width="0.5"/>
+          <!-- Back wall slope -->
+          <polygon points="60,45 140,45 140,85 60,85" fill="url(#wallGrad)" stroke="#60a5fa" stroke-width="0.5"/>
+          <!-- Left slope -->
+          <polygon points="25,30 60,45 60,85 45,100" fill="url(#slopeGrad)" stroke="#93c5fd" stroke-width="0.5"/>
+          <!-- Right slope -->
+          <polygon points="175,30 140,45 140,85 155,100" fill="url(#slopeGrad)" stroke="#93c5fd" stroke-width="0.5"/>
+          <!-- Top rim -->
+          <polygon points="25,30 175,30 140,45 60,45" fill="#bfdbfe" stroke="#93c5fd" stroke-width="0.5"/>
+          <!-- Grid lines on floor -->
+          <line x1="70" y1="85" x2="55" y2="100" stroke="#2563eb" stroke-width="0.4"/>
+          <line x1="100" y1="85" x2="100" y2="100" stroke="#2563eb" stroke-width="0.4"/>
+          <line x1="130" y1="85" x2="145" y2="100" stroke="#2563eb" stroke-width="0.4"/>
+          <!-- Dimension labels -->
+          <text x="100" y="15" fill="#60a5fa" font-size="7" text-anchor="middle">Three.js WebGL — Real 3D</text>
+          <text x="100" y="115" fill="#475569" font-size="6" text-anchor="middle">Camera orbit · Zoom · Lighting</text>
+        </svg>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Three.js / React Three Fiber</h3>
+      <p>3D จริงด้วย WebGL · หมุนกล้องได้ · มี lighting · สวยที่สุด · ใช้ @react-three/fiber · Bundle ใหญ่ขึ้น ~200KB</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#0f172a;border-radius:8px;padding:16px;height:140px;display:flex;align-items:center;justify-content:center;">
+        <svg viewBox="0 0 200 120" width="200" height="120">
+          <defs>
+            <linearGradient id="isoFloor" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#0ea5e9"/>
+              <stop offset="100%" stop-color="#0369a1"/>
+            </linearGradient>
+          </defs>
+          <!-- Isometric box pond -->
+          <!-- Top face (top view) -->
+          <polygon points="100,20 160,50 100,80 40,50" fill="#e0f2fe" stroke="#0ea5e9" stroke-width="1"/>
+          <!-- Right face -->
+          <polygon points="160,50 160,90 100,120 100,80" fill="#0369a1" stroke="#0ea5e9" stroke-width="1"/>
+          <!-- Left face -->
+          <polygon points="40,50 100,80 100,120 40,90" fill="#0284c7" stroke="#0ea5e9" stroke-width="1"/>
+          <!-- Inner top (recessed) -->
+          <polygon points="100,32 148,56 100,68 52,44" fill="#0ea5e9" stroke="#38bdf8" stroke-width="0.5"/>
+          <!-- Slope lines -->
+          <line x1="100" y1="20" x2="100" y2="32" stroke="#38bdf8" stroke-width="0.8"/>
+          <line x1="160" y1="50" x2="148" y2="56" stroke="#38bdf8" stroke-width="0.8"/>
+          <line x1="40" y1="50" x2="52" y2="44" stroke="#38bdf8" stroke-width="0.8"/>
+          <text x="100" y="14" fill="#38bdf8" font-size="7" text-anchor="middle">Isometric SVG</text>
+          <text x="100" y="115" fill="#475569" font-size="6" text-anchor="middle">Static · Fast · No library needed</text>
+        </svg>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Isometric SVG (คำนวณเอง)</h3>
+      <p>วาด SVG แบบ isometric projection · ไม่ต้องใช้ library เพิ่ม · เบา · แต่ไม่สามารถหมุนกล้องได้ · shape ที่ไม่ใช่สี่เหลี่ยมทำยาก</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#0f172a;border-radius:8px;padding:16px;height:140px;display:flex;align-items:center;justify-content:center;">
+        <svg viewBox="0 0 200 120" width="200" height="120">
+          <defs>
+            <linearGradient id="bab" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#a78bfa"/>
+              <stop offset="100%" stop-color="#7c3aed"/>
+            </linearGradient>
+          </defs>
+          <!-- Babylon.js style -->
+          <!-- Base shape (irregular polygon - top view + perspective) -->
+          <polygon points="30,40 80,25 150,30 175,55 160,90 110,100 50,95 20,70" fill="#1e1b4b" stroke="#7c3aed" stroke-width="1"/>
+          <!-- Floor depression -->
+          <polygon points="55,52 95,42 145,48 160,65 148,82 100,88 58,82 42,68" fill="#4c1d95" stroke="#8b5cf6" stroke-width="0.8"/>
+          <!-- Slope fill gradients -->
+          <polygon points="30,40 55,52 42,68 20,70" fill="url(#bab)" opacity="0.6"/>
+          <polygon points="80,25 95,42 55,52 30,40" fill="url(#bab)" opacity="0.4"/>
+          <polygon points="150,30 145,48 95,42 80,25" fill="url(#bab)" opacity="0.5"/>
+          <polygon points="175,55 160,65 145,48 150,30" fill="url(#bab)" opacity="0.6"/>
+          <!-- Grid on floor -->
+          <line x1="80" y1="60" x2="120" y2="60" stroke="#7c3aed" stroke-width="0.5" stroke-dasharray="3,2"/>
+          <line x1="100" y1="45" x2="100" y2="85" stroke="#7c3aed" stroke-width="0.5" stroke-dasharray="3,2"/>
+          <text x="100" y="14" fill="#a78bfa" font-size="7" text-anchor="middle">Babylon.js — แสดง shape ผิดปกติได้</text>
+          <text x="100" y="115" fill="#475569" font-size="6" text-anchor="middle">Orbit camera · Polygon shape support</text>
+        </svg>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Three.js + Custom Extrusion</h3>
+      <p>ใช้ Three.js ExtrudeGeometry จาก polygon ที่ user วาด · หมุนกล้องได้ · รองรับทุก shape · Recommended สำหรับโจทย์นี้</p>
+    </div>
+  </div>
+
+</div>

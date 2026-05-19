@@ -1,0 +1,84 @@
+<h2>โครงสร้าง Layout ของแอปพลิเคชัน</h2>
+<p class="subtitle">เลือกรูปแบบการจัดวาง panel หลักของโปรแกรม</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="display:flex;gap:6px;padding:12px;background:#0f172a;border-radius:8px;height:140px;">
+        <div style="flex:1.2;background:#1e293b;border-radius:6px;display:flex;flex-direction:column;gap:4px;padding:8px;">
+          <div style="background:#334155;border-radius:3px;height:8px;width:60%"></div>
+          <div style="flex:1;background:#0ea5e9;border-radius:4px;margin-top:4px;display:flex;align-items:center;justify-content:center;">
+            <span style="color:#fff;font-size:10px;font-weight:600;">Canvas<br>วาดรูป</span>
+          </div>
+          <div style="background:#1e40af;border-radius:4px;height:32px;display:flex;align-items:center;justify-content:center;">
+            <span style="color:#93c5fd;font-size:9px;">3D Preview</span>
+          </div>
+        </div>
+        <div style="width:90px;background:#1e293b;border-radius:6px;display:flex;flex-direction:column;gap:4px;padding:8px;">
+          <div style="background:#334155;border-radius:3px;height:6px;width:80%"></div>
+          <div style="background:#334155;border-radius:3px;height:6px;width:60%"></div>
+          <div style="background:#0ea5e9;border-radius:3px;height:6px;margin-top:4px;"></div>
+          <div style="background:#334155;border-radius:3px;height:6px;"></div>
+          <div style="background:#334155;border-radius:3px;height:6px;width:70%"></div>
+          <div style="flex:1;"></div>
+          <div style="background:#16a34a;border-radius:4px;height:20px;display:flex;align-items:center;justify-content:center;">
+            <span style="color:#fff;font-size:8px;font-weight:600;">คำนวณ</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Left Canvas + Right Panel</h3>
+      <p>Canvas วาดรูปอยู่ซ้าย (ใหญ่) · 3D Preview อยู่ล่าง Canvas · Form ค่า slope/depth + ผลลัพธ์อยู่ขวา · เหมาะกับหน้าจอกว้าง 16:9</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="display:flex;flex-direction:column;gap:6px;padding:12px;background:#0f172a;border-radius:8px;height:140px;">
+        <div style="display:flex;gap:6px;flex:1;">
+          <div style="flex:1;background:#1e40af;border-radius:6px;display:flex;align-items:center;justify-content:center;">
+            <span style="color:#93c5fd;font-size:10px;font-weight:600;">Canvas วาดรูป (Top)</span>
+          </div>
+          <div style="flex:1;background:#1e293b;border-radius:6px;display:flex;align-items:center;justify-content:center;">
+            <span style="color:#64748b;font-size:10px;font-weight:600;">3D Preview</span>
+          </div>
+        </div>
+        <div style="height:44px;background:#1e293b;border-radius:6px;display:flex;align-items:center;gap:8px;padding:0 8px;">
+          <div style="flex:1;background:#334155;border-radius:3px;height:6px;"></div>
+          <div style="flex:1;background:#334155;border-radius:3px;height:6px;"></div>
+          <div style="flex:1;background:#334155;border-radius:3px;height:6px;"></div>
+          <div style="background:#16a34a;border-radius:4px;height:24px;width:50px;display:flex;align-items:center;justify-content:center;">
+            <span style="color:#fff;font-size:8px;">คำนวณ</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Top Split + Bottom Bar</h3>
+      <p>Canvas & 3D อยู่บนแบบ split ซ้าย-ขวา · Form inputs อยู่ที่ bottom bar · ผลลัพธ์แสดงเป็น overlay card · เหมาะกับทุกขนาดจอ</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="display:flex;gap:6px;padding:12px;background:#0f172a;border-radius:8px;height:140px;">
+        <div style="width:60px;background:#1e293b;border-radius:6px;display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 4px;">
+          <div style="width:32px;height:32px;background:#0ea5e9;border-radius:6px;"></div>
+          <div style="width:32px;height:32px;background:#334155;border-radius:6px;"></div>
+          <div style="width:32px;height:32px;background:#334155;border-radius:6px;"></div>
+          <div style="width:32px;height:32px;background:#334155;border-radius:6px;"></div>
+        </div>
+        <div style="flex:1;background:#1e40af;border-radius:6px;display:flex;align-items:center;justify-content:center;">
+          <span style="color:#93c5fd;font-size:10px;font-weight:600;">Workspace<br>(Canvas / 3D / Result)</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Icon Sidebar + Full Workspace</h3>
+      <p>Sidebar icon ซ้าย switch mode (Draw / 3D / Calculate / Export) · Workspace ตรงกลางเปลี่ยนตาม mode · Minimal มากที่สุด เหมาะกับงาน professional</p>
+    </div>
+  </div>
+
+</div>
