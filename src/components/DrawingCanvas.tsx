@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import { Stage, Layer, Line, Circle, Text, Rect } from 'react-konva'
 import type { KonvaEventObject } from 'konva/lib/Node'
 import { usePondStore } from '../store/pondStore'
@@ -35,6 +35,7 @@ export default function DrawingCanvas() {
   const [ppm, setPpm] = useState(40)
   const [offset, setOffset] = useState({ x: 0, y: 0 })
   const [midDrag, setMidDrag] = useState<{ x: number; y: number } | null>(null)
+  const [showDims, setShowDims] = useState(false)
 
   const {
     points, isClosed, snapEnabled, floorPts,
@@ -206,6 +207,16 @@ export default function DrawingCanvas() {
           Center
         </button>
         <button
+          onClick={() => setShowDims(d => !d)}
+          className={`px-2 py-0.5 rounded border transition-colors ${
+            showDims
+              ? 'bg-amber-500/10 border-amber-500 text-amber-400'
+              : 'border-slate-700 text-slate-500'
+          }`}
+        >
+          Dim
+        </button>
+        <button
           onClick={toggleSnap}
           className={`px-2 py-0.5 rounded border transition-colors ${
             snapEnabled
@@ -302,6 +313,33 @@ export default function DrawingCanvas() {
                 />
               )
             })}
+
+            {/* Dimension labels */}
+            {showDims && points.length >= 2 && (() => {
+              const n = points.length
+              const edgeCount = isClosed ? n : n - 1
+              const scx = points.reduce((s, p) => s + toScreen(p).x, 0) / n
+              const scy = points.reduce((s, p) => s + toScreen(p).y, 0) / n
+              return Array.from({ length: edgeCount }, (_, i) => {
+                const a = points[i], b = points[(i + 1) % n]
+                const sa = toScreen(a), sb = toScreen(b)
+                const mx = (sa.x + sb.x) / 2, my = (sa.y + sb.y) / 2
+                const odx = mx - scx, ody = my - scy
+                const olen = Math.sqrt(odx * odx + ody * ody) || 1
+                const lx = mx + (odx / olen) * 16, ly = my + (ody / olen) * 16
+                const realLen = Math.sqrt((b.x - a.x) ** 2 + (b.y - a.y) ** 2)
+                const label = realLen >= 10 ? `${realLen.toFixed(1)}m` : `${realLen.toFixed(2)}m`
+                const tw = label.length * 6 + 8
+                return (
+                  <React.Fragment key={`dim${i}`}>
+                    <Rect x={lx - tw / 2} y={ly - 9} width={tw} height={14}
+                      fill="#1e293b" stroke="#f59e0b" strokeWidth={0.6} cornerRadius={2} />
+                    <Text x={lx - tw / 2 + 4} y={ly - 6}
+                      text={label} fill="#fbbf24" fontSize={9} />
+                  </React.Fragment>
+                )
+              })
+            })()}
 
             {/* Scale bar */}
             <Line points={[scaleX, scaleY, scaleX + scalePx, scaleY]} stroke="#94a3b8" strokeWidth={1.5} />

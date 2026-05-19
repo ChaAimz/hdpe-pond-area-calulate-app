@@ -37,6 +37,7 @@ export default function ThreeDViewer() {
   const { points, depth, floorPts } = usePondStore()
   const hasShape = points.length >= 3 && floorPts.length >= 3
   const [fitTrigger, setFitTrigger] = useState(0)
+  const [showGrid, setShowGrid] = useState(true)
 
   const geo = hasShape ? buildPondGeometry(points, floorPts, depth) : null
 
@@ -86,6 +87,14 @@ export default function ThreeDViewer() {
         >
           Fit View
         </button>
+        <button
+          onClick={() => setShowGrid(g => !g)}
+          className={`px-2 py-0.5 rounded border transition-colors ${
+            showGrid ? 'border-slate-700 text-slate-400 hover:text-white' : 'border-slate-700 text-slate-600'
+          }`}
+        >
+          Grid
+        </button>
         <span className="text-slate-600">Drag · Scroll to zoom</span>
       </div>
       <div className="flex-1">
@@ -111,7 +120,7 @@ export default function ThreeDViewer() {
             <Line key={`se${i}`} points={pts} color="#60a5fa" lineWidth={1} />
           ))}
 
-          <gridHelper args={[50, 50, '#1e3a5f', '#1e293b']} />
+          {showGrid && <gridHelper args={[50, 50, '#1e3a5f', '#1e293b']} />}
           <FitCamera trigger={fitTrigger} center={center} radius={radius} />
         </Canvas>
       </div>
