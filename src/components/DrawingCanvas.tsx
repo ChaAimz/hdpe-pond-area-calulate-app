@@ -10,6 +10,14 @@ function snapToGrid(val: number): number {
 
 const SUB = 5
 
+function niceScale(ppm: number, maxPx: number): number {
+  const maxM = maxPx / ppm
+  for (const v of [200, 100, 50, 20, 10, 5, 2, 1, 0.5, 0.2, 0.1]) {
+    if (v <= maxM) return v
+  }
+  return 0.1
+}
+
 export default function DrawingCanvas() {
   const containerRef = useRef<HTMLDivElement>(null)
   const [size, setSize] = useState({ width: 600, height: 400 })
@@ -145,6 +153,12 @@ export default function DrawingCanvas() {
 
   const cursorClass = midDrag ? 'cursor-grabbing' : (isClosed ? 'cursor-default' : 'cursor-crosshair')
 
+  const scaleM = niceScale(ppm, 160)
+  const scalePx = scaleM * ppm
+  const scaleX = 16
+  const scaleY = size.height - 16
+  const scaleLabel = scaleM >= 1 ? `${scaleM} m` : `${scaleM * 100} cm`
+
   return (
     <div className="flex-1 flex flex-col min-h-0 border-r border-slate-800">
       <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-900 border-b border-slate-800 shrink-0 text-xs">
@@ -253,6 +267,13 @@ export default function DrawingCanvas() {
                 />
               )
             })}
+
+            {/* Scale bar */}
+            <Line points={[scaleX, scaleY, scaleX + scalePx, scaleY]} stroke="#94a3b8" strokeWidth={1.5} />
+            <Line points={[scaleX, scaleY - 5, scaleX, scaleY + 5]} stroke="#94a3b8" strokeWidth={1.5} />
+            <Line points={[scaleX + scalePx, scaleY - 5, scaleX + scalePx, scaleY + 5]} stroke="#94a3b8" strokeWidth={1.5} />
+            <Text x={scaleX} y={scaleY - 18} width={scalePx} align="center"
+              text={scaleLabel} fill="#94a3b8" fontSize={10} />
           </Layer>
         </Stage>
       </div>
