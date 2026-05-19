@@ -47,14 +47,14 @@ function CameraController({ cmd, autoRotate, radius }: {
 }
 
 const ICON_BTN = 'p-1.5 rounded border transition-colors'
-const BTN_ON  = `${ICON_BTN} bg-sky-500/10 border-sky-500 text-sky-400`
-const BTN_OFF = `${ICON_BTN} border-slate-700 text-slate-400 hover:text-white hover:border-slate-500`
-const BTN_DIM_ON  = `${ICON_BTN} bg-amber-500/10 border-amber-500 text-amber-400`
-const BTN_DIM_OFF = `${ICON_BTN} border-slate-700 text-slate-600 hover:text-slate-400`
-const BTN_DIS = `${ICON_BTN} border-slate-800 text-slate-700`
+const BTN_ON  = `${ICON_BTN} bg-sky-500/10 border-sky-500 text-sky-500 dark:text-sky-400`
+const BTN_OFF = `${ICON_BTN} border-gray-300 text-gray-500 hover:text-gray-900 hover:border-gray-400 dark:border-slate-700 dark:text-slate-400 dark:hover:text-white dark:hover:border-slate-500`
+const BTN_DIM_ON  = `${ICON_BTN} bg-amber-500/10 border-amber-500 text-amber-500 dark:text-amber-400`
+const BTN_DIM_OFF = `${ICON_BTN} border-gray-300 text-gray-400 hover:text-gray-500 dark:border-slate-700 dark:text-slate-600 dark:hover:text-slate-400`
+const BTN_DIS = `${ICON_BTN} border-gray-200 text-gray-300 dark:border-slate-800 dark:text-slate-700`
 const VIEW_BTN = 'px-2 py-0.5 text-xs rounded border transition-colors'
-const VIEW_ACT = `${VIEW_BTN} bg-sky-500/10 border-sky-500 text-sky-400`
-const VIEW_DEF = `${VIEW_BTN} border-slate-700 text-slate-500 hover:text-white hover:border-slate-500`
+const VIEW_ACT = `${VIEW_BTN} bg-sky-500/10 border-sky-500 text-sky-500 dark:text-sky-400`
+const VIEW_DEF = `${VIEW_BTN} border-gray-300 text-gray-500 hover:text-gray-900 hover:border-gray-400 dark:border-slate-700 dark:text-slate-400 dark:hover:text-white dark:hover:border-slate-500`
 
 const DIM_STYLE: React.CSSProperties = {
   background: 'rgba(15,23,42,0.85)', color: '#fbbf24',
@@ -170,8 +170,8 @@ export default function ThreeDViewer() {
   return (
     <div className="flex-1 flex flex-col min-h-0">
       {/* Toolbar */}
-      <div className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 border-b border-slate-800 shrink-0 flex-wrap">
-        <span className="text-xs text-slate-400">3D View</span>
+      <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white border-b border-gray-200 shrink-0 flex-wrap dark:bg-slate-900 dark:border-slate-800">
+        <span className="text-xs text-gray-500 dark:text-slate-400">3D View</span>
 
         {/* View presets */}
         <div className="flex gap-1">
@@ -200,7 +200,7 @@ export default function ThreeDViewer() {
           className={!hasShape ? BTN_DIS : showDims ? BTN_DIM_ON : BTN_DIM_OFF}
         ><Ruler size={14} /></button>
 
-        <span className="text-xs text-slate-600">Drag · Scroll</span>
+        <span className="text-xs text-gray-400 dark:text-slate-600">Drag · Scroll</span>
       </div>
 
       {/* Canvas */}
@@ -209,7 +209,7 @@ export default function ThreeDViewer() {
         onPointerMove={resetIdle}
       >
         {autoRotate && (
-          <div className="absolute top-2 right-2 z-10 text-xs text-slate-500 pointer-events-none select-none">
+          <div className="absolute top-2 right-2 z-10 text-xs text-gray-500 pointer-events-none select-none dark:text-slate-500">
             Auto-rotate — touch to stop
           </div>
         )}

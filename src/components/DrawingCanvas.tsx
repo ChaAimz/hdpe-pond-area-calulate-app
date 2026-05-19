@@ -171,9 +171,9 @@ export default function DrawingCanvas() {
   const scaleLabel = scaleM >= 1 ? `${scaleM} m` : `${scaleM * 100} cm`
 
   return (
-    <div className="flex-1 flex flex-col min-h-0 border-r border-slate-800">
-      <div className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 border-b border-slate-800 shrink-0">
-        <span className="text-xs text-slate-400">Top View (m)</span>
+    <div className="flex-1 flex flex-col min-h-0 border-r border-gray-200 dark:border-slate-800">
+      <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white border-b border-gray-200 shrink-0 dark:bg-slate-900 dark:border-slate-800">
+        <span className="text-xs text-gray-500 dark:text-slate-400">Top View (m)</span>
         <div className="flex-1" />
         <select
           value={defaultPpm}
@@ -181,7 +181,7 @@ export default function DrawingCanvas() {
             const p = Number(e.target.value)
             setDefaultPpm(p); setPpm(p); setOffset({ x: 0, y: 0 })
           }}
-          className="px-1 py-0.5 rounded border border-slate-700 bg-slate-900 text-slate-400 text-xs"
+          className="px-1 py-0.5 rounded border border-gray-300 bg-white text-gray-500 text-xs dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400"
         >
           {SCALE_PRESETS.map(s => (
             <option key={s.label} value={s.ppm}>{s.label}</option>
@@ -189,7 +189,7 @@ export default function DrawingCanvas() {
         </select>
         <button title="Reset View"
           onClick={() => { setPpm(defaultPpm); setOffset({ x: 0, y: 0 }) }}
-          className="p-1.5 rounded border border-slate-700 text-slate-400 hover:text-white hover:border-slate-500 transition-colors"
+          className="p-1.5 rounded border border-gray-300 text-gray-500 hover:text-gray-900 hover:border-gray-400 transition-colors dark:border-slate-700 dark:text-slate-400 dark:hover:text-white dark:hover:border-slate-500"
         ><RotateCcw size={14} /></button>
         <button title="Center on polygon"
           disabled={points.length === 0}
@@ -198,25 +198,25 @@ export default function DrawingCanvas() {
             const cy = points.reduce((s, p) => s + p.y, 0) / points.length
             setOffset({ x: size.width / 2 - cx * ppm, y: cy * ppm - size.height / 2 })
           }}
-          className="p-1.5 rounded border border-slate-700 text-slate-400 hover:text-white hover:border-slate-500 transition-colors disabled:opacity-30"
+          className="p-1.5 rounded border border-gray-300 text-gray-500 hover:text-gray-900 hover:border-gray-400 transition-colors disabled:opacity-30 dark:border-slate-700 dark:text-slate-400 dark:hover:text-white dark:hover:border-slate-500"
         ><Crosshair size={14} /></button>
         <button title={showDims ? 'Hide Dimensions' : 'Show Dimensions'}
           onClick={() => setShowDims(d => !d)}
-          className={`p-1.5 rounded border transition-colors ${showDims ? 'bg-amber-500/10 border-amber-500 text-amber-400' : 'border-slate-700 text-slate-600 hover:text-slate-400'}`}
+          className={`p-1.5 rounded border transition-colors ${showDims ? 'bg-amber-500/10 border-amber-500 text-amber-500 dark:text-amber-400' : 'border-gray-300 text-gray-400 hover:text-gray-500 dark:border-slate-700 dark:text-slate-600 dark:hover:text-slate-400'}`}
         ><Ruler size={14} /></button>
         <button title={snapEnabled ? 'Snap ON' : 'Snap OFF'}
           onClick={toggleSnap}
-          className={`p-1.5 rounded border transition-colors ${snapEnabled ? 'bg-sky-500/10 border-sky-500 text-sky-400' : 'border-slate-700 text-slate-600 hover:text-slate-400'}`}
+          className={`p-1.5 rounded border transition-colors ${snapEnabled ? 'bg-sky-500/10 border-sky-500 text-sky-500 dark:text-sky-400' : 'border-gray-300 text-gray-400 hover:text-gray-500 dark:border-slate-700 dark:text-slate-600 dark:hover:text-slate-400'}`}
         ><Magnet size={14} /></button>
         <button title="Undo last point"
           onClick={removeLastPoint}
           disabled={points.length === 0}
-          className="p-1.5 rounded border border-slate-700 text-slate-400 hover:text-white hover:border-slate-500 transition-colors disabled:opacity-30"
+          className="p-1.5 rounded border border-gray-300 text-gray-500 hover:text-gray-900 hover:border-gray-400 transition-colors disabled:opacity-30 dark:border-slate-700 dark:text-slate-400 dark:hover:text-white dark:hover:border-slate-500"
         ><Undo2 size={14} /></button>
         <button title="Clear all points"
           onClick={clearPoints}
           disabled={points.length === 0}
-          className="p-1.5 rounded border border-red-900 text-red-500 hover:text-red-300 hover:border-red-700 transition-colors disabled:opacity-30"
+          className="p-1.5 rounded border border-red-200 text-red-500 hover:text-red-600 hover:border-red-400 transition-colors disabled:opacity-30 dark:border-red-900 dark:text-red-400 dark:hover:text-red-300 dark:hover:border-red-700"
         ><Trash2 size={14} /></button>
       </div>
 
