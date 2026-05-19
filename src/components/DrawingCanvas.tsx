@@ -5,6 +5,12 @@ import type { KonvaEventObject } from 'konva/lib/Node'
 import { useLang } from '../i18n/LangContext'
 import { usePondStore } from '../store/pondStore'
 import type { Point } from '../types'
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose,
+} from './ui/dialog'
+import { Input } from './ui/input'
+import { Button } from './ui/button'
+import { Label } from './ui/label'
 
 function snapToGrid(val: number): number {
   return Math.round(val)
@@ -40,7 +46,7 @@ export default function DrawingCanvas() {
   const [midDrag, setMidDrag] = useState<{ x: number; y: number } | null>(null)
   const [showDims, setShowDims] = useState(false)
   const [editingEdge, setEditingEdge] = useState<{
-    index: number; inputValue: string; x: number; y: number
+    index: number; inputValue: string
   } | null>(null)
 
   const {
@@ -334,7 +340,7 @@ export default function DrawingCanvas() {
                       fill="rgba(15,23,42,0.85)" stroke="#92400e" strokeWidth={1} cornerRadius={3}
                       onClick={(e) => {
                         e.cancelBubble = true
-                        setEditingEdge({ index: i, inputValue: realLen.toFixed(2), x: lx, y: ly - 9 })
+                        setEditingEdge({ index: i, inputValue: realLen.toFixed(2) })
                       }}
                       onMouseEnter={e => { e.target.stroke('#fbbf24'); e.target.getLayer()?.batchDraw() }}
                       onMouseLeave={e => { e.target.stroke('#92400e'); e.target.getLayer()?.batchDraw() }}
@@ -355,43 +361,43 @@ export default function DrawingCanvas() {
           </Layer>
         </Stage>
 
-        {/* Edge-length edit popover */}
-        {editingEdge && (
-          <>
-            <div className="absolute inset-0 z-40" onClick={() => setEditingEdge(null)} />
-            <div
-              className="absolute z-50 bg-slate-900 dark:bg-slate-900 border border-sky-700 rounded-lg shadow-2xl p-3 flex flex-col gap-2 min-w-[160px]"
-              style={{ left: editingEdge.x, top: editingEdge.y - 72, transform: 'translateX(-50%)' }}
-            >
-              <div className="text-xs text-slate-400 font-medium">แก้ไขความยาวเส้น</div>
-              <div className="flex items-center gap-1.5">
-                <input
+        {/* Edge-length edit dialog */}
+        <Dialog open={editingEdge !== null} onOpenChange={open => { if (!open) setEditingEdge(null) }}>
+          <DialogContent className="max-w-xs">
+            <DialogHeader>
+              <DialogTitle className="text-sm">แก้ไขความยาวเส้น</DialogTitle>
+            </DialogHeader>
+            <div className="flex flex-col gap-3 py-1">
+              <Label htmlFor="edge-len" className="text-xs text-muted-foreground">ความยาว (เมตร)</Label>
+              <div className="flex items-center gap-2">
+                <Input
+                  id="edge-len"
                   autoFocus
-                  type="number" min="0.01" step="0.01"
-                  value={editingEdge.inputValue}
+                  type="number"
+                  min="0.01"
+                  step="0.01"
+                  value={editingEdge?.inputValue ?? ''}
                   onChange={e => setEditingEdge(ev => ev ? { ...ev, inputValue: e.target.value } : null)}
                   onKeyDown={e => {
                     if (e.key === 'Enter') confirmEdgeEdit()
                     if (e.key === 'Escape') setEditingEdge(null)
                     e.stopPropagation()
                   }}
-                  className="w-24 px-2 py-1 text-sm bg-slate-800 border border-slate-600 rounded text-white focus:border-sky-500 focus:outline-none"
+                  className="h-8 text-sm"
                 />
-                <span className="text-xs text-slate-400">m</span>
-              </div>
-              <div className="flex gap-1.5">
-                <button onClick={confirmEdgeEdit}
-                  className="flex-1 text-xs py-1 bg-sky-600 hover:bg-sky-500 rounded text-white transition-colors">
-                  OK
-                </button>
-                <button onClick={() => setEditingEdge(null)}
-                  className="flex-1 text-xs py-1 bg-slate-700 hover:bg-slate-600 rounded text-white transition-colors">
-                  ยกเลิก
-                </button>
+                <span className="text-sm text-muted-foreground">m</span>
               </div>
             </div>
-          </>
-        )}
+            <DialogFooter className="flex gap-2 sm:gap-2">
+              <DialogClose asChild>
+                <Button variant="outline" size="sm" className="flex-1">ยกเลิก</Button>
+              </DialogClose>
+              <Button size="sm" className="flex-1 bg-sky-600 hover:bg-sky-500" onClick={confirmEdgeEdit}>
+                ตกลง
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   )
