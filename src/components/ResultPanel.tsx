@@ -44,6 +44,7 @@ export default function ResultPanel() {
         <div className="flex gap-2 flex-1 flex-wrap">
           <StatCard label="ก้นบ่อ" value={result ? result.floorArea.toFixed(1) : '—'} unit="m²" />
           <StatCard label="ขอบ Slope" value={result ? result.slopeArea.toFixed(1) : '—'} unit="m²" />
+          <StatCard label="เส้นรอบรูป" value={result ? result.perimeter.toFixed(1) : '—'} unit="m" />
           <StatCard label="รวม" value={result ? result.totalArea.toFixed(1) : '—'} unit="m²" />
           <StatCard label="+Overlap" value={result ? result.hdpeArea.toFixed(1) : '—'} unit="m²" />
           <StatCard label="จำนวน Roll" value={result ? String(result.rollCount) : '—'} unit="rolls" highlight />

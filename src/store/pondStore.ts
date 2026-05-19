@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import type { Point, HDPEPreset, SlopeValue, PondResult } from '../types'
 import { HDPE_PRESETS } from '../types'
-import { calculatePondGeometry } from '../lib/geometry'
+import { calculatePondGeometry, perimeter } from '../lib/geometry'
 import { calculateHdpe, slopeRatioToDegrees, slopeDegreesToRatio } from '../lib/hdpe'
 
 interface PondState {
@@ -41,7 +41,7 @@ function recompute(
   if (points.length < 3) return { floorPts: [], result: null }
   const { floorPts, floorArea, slopeArea, totalArea } = calculatePondGeometry(points, depth, slope.ratio)
   const { hdpeArea, rollCount } = calculateHdpe(totalArea, overlapPercent, hdpePreset)
-  return { floorPts, result: { floorArea, slopeArea, totalArea, hdpeArea, rollCount } }
+  return { floorPts, result: { floorArea, slopeArea, totalArea, hdpeArea, rollCount, perimeter: perimeter(points) } }
 }
 
 export const usePondStore = create<PondState>((set, get) => ({

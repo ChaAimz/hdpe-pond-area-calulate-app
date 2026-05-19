@@ -89,3 +89,7 @@ export function calculatePondGeometry(
 
   return { floorPts, floorArea, slopeArea, totalArea: floorArea + slopeArea }
 }
+
+export function perimeter(pts: Point[]): number {
+  return polygonEdgeLengths(pts).reduce((s, l) => s + l, 0)
+}

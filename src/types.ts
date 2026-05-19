@@ -20,6 +20,7 @@ export interface PondResult {
   totalArea: number   // m²
   hdpeArea: number    // m² after overlap applied
   rollCount: number
+  perimeter: number   // m — top polygon perimeter
 }
 
 export const HDPE_PRESETS: HDPEPreset[] = [

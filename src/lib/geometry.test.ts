@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { shoelaceArea, insetPolygon, calculatePondGeometry, polygonEdgeLengths } from './geometry'
+import { shoelaceArea, insetPolygon, calculatePondGeometry, polygonEdgeLengths, perimeter } from './geometry'
 
 describe('shoelaceArea', () => {
   it('returns area of a 4×3 rectangle', () => {
@@ -61,5 +61,17 @@ describe('calculatePondGeometry', () => {
     const r = calculatePondGeometry(top, 0, 2)
     expect(r.floorArea).toBeCloseTo(100, 1)
     expect(r.slopeArea).toBeCloseTo(0, 5)
+  })
+})
+
+describe('perimeter', () => {
+  it('returns sum of edge lengths for a 3×4 rectangle', () => {
+    const pts = [{ x: 0, y: 0 }, { x: 3, y: 0 }, { x: 3, y: 4 }, { x: 0, y: 4 }]
+    expect(perimeter(pts)).toBeCloseTo(14, 5)
+  })
+
+  it('returns correct perimeter for a 3-4-5 right triangle', () => {
+    const pts = [{ x: 0, y: 0 }, { x: 3, y: 0 }, { x: 0, y: 4 }]
+    expect(perimeter(pts)).toBeCloseTo(12, 5)
   })
 })
