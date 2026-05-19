@@ -1,12 +1,42 @@
-import { Canvas } from '@react-three/fiber'
+import { useRef, useEffect, useState } from 'react'
+import { Canvas, useThree } from '@react-three/fiber'
 import { OrbitControls, Line } from '@react-three/drei'
 import * as THREE from 'three'
 import { usePondStore } from '../store/pondStore'
 import { buildPondGeometry } from '../lib/buildPondGeometry'
 
+function FitCamera({ trigger, center, radius }: {
+  trigger: number
+  center: THREE.Vector3
+  radius: number
+}) {
+  const { camera } = useThree()
+  const controlsRef = useRef<any>(null)
+  const centerRef = useRef(center)
+  const radiusRef = useRef(radius)
+  centerRef.current = center
+  radiusRef.current = radius
+
+  useEffect(() => {
+    if (trigger === 0 || radiusRef.current === 0) return
+    const fov = (camera as THREE.PerspectiveCamera).fov * (Math.PI / 180)
+    const dist = (radiusRef.current / Math.sin(fov / 2)) * 1.3
+    const c = centerRef.current
+    camera.position.set(c.x + dist * 0.577, c.y + dist * 0.577, c.z + dist * 0.577)
+    camera.lookAt(c)
+    if (controlsRef.current) {
+      controlsRef.current.target.copy(c)
+      controlsRef.current.update()
+    }
+  }, [trigger])
+
+  return <OrbitControls ref={controlsRef} makeDefault enablePan />
+}
+
 export default function ThreeDViewer() {
   const { points, depth, floorPts } = usePondStore()
   const hasShape = points.length >= 3 && floorPts.length >= 3
+  const [fitTrigger, setFitTrigger] = useState(0)
 
   const geo = hasShape ? buildPondGeometry(points, floorPts, depth) : null
 
@@ -20,7 +50,6 @@ export default function ThreeDViewer() {
        new THREE.Vector3(floorPts[0].x, -depth, -floorPts[0].y)]
     : []
 
-  // floor[(i-1+m)%m] is the floor corner nearest to top[i]
   const slopeEdges = hasShape
     ? points.map((p, i) => {
         const m = floorPts.length
@@ -29,11 +58,34 @@ export default function ThreeDViewer() {
       })
     : []
 
+  const center = hasShape
+    ? new THREE.Vector3(
+        points.reduce((s, p) => s + p.x, 0) / points.length,
+        -depth / 2,
+        -points.reduce((s, p) => s + p.y, 0) / points.length,
+      )
+    : new THREE.Vector3()
+
+  const radius = hasShape
+    ? Math.max(
+        ...points.map(p => new THREE.Vector3(p.x, 0, -p.y).distanceTo(center)),
+        ...floorPts.map(fp => new THREE.Vector3(fp.x, -depth, -fp.y).distanceTo(center)),
+        depth,
+      )
+    : 1
+
   return (
     <div className="flex-1 flex flex-col min-h-0">
       <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-900 border-b border-slate-800 shrink-0 text-xs">
         <span className="text-slate-400">3D View</span>
         <div className="flex-1" />
+        <button
+          disabled={!hasShape}
+          onClick={() => setFitTrigger(t => t + 1)}
+          className="px-2 py-0.5 rounded border border-slate-700 text-slate-400 hover:text-white transition-colors disabled:opacity-30"
+        >
+          Fit View
+        </button>
         <span className="text-slate-600">Drag · Scroll to zoom</span>
       </div>
       <div className="flex-1">
@@ -60,7 +112,7 @@ export default function ThreeDViewer() {
           ))}
 
           <gridHelper args={[50, 50, '#1e3a5f', '#1e293b']} />
-          <OrbitControls makeDefault enablePan />
+          <FitCamera trigger={fitTrigger} center={center} radius={radius} />
         </Canvas>
       </div>
     </div>
