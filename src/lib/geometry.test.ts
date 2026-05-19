@@ -42,6 +42,17 @@ describe('insetPolygon', () => {
     const inset = insetPolygon(pts, 5) // 5 > half of 2m narrow side
     expect(inset.length === 0 || shoelaceArea(inset) < 0.01).toBe(true)
   })
+
+  it('CW input: inset[i] corresponds to topPts[(i+1)%n] for slope quad alignment', () => {
+    // CW square: drawn on screen as top-left→top-right→bottom-right→bottom-left (y-up CW)
+    const cw = [{ x: 0, y: 10 }, { x: 10, y: 10 }, { x: 10, y: 0 }, { x: 0, y: 0 }]
+    const inset = insetPolygon(cw, 1) // run=1m inset
+    expect(inset).toHaveLength(4)
+    // floor[0] should be near top edge cw[0]→cw[1] (y=10 edge), i.e. inside that edge at y≈9
+    expect(inset[0].y).toBeCloseTo(9, 0)
+    // floor[1] should be near cw[1]→cw[2] (x=10 edge), i.e. inside that edge at x≈9
+    expect(inset[1].x).toBeCloseTo(9, 0)
+  })
 })
 
 describe('calculatePondGeometry', () => {

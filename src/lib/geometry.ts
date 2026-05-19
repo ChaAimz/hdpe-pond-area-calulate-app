@@ -28,7 +28,8 @@ export function insetPolygon(pts: Point[], d: number): Point[] {
   if (d <= 0) return pts
 
   // Ensure CCW winding (positive signed area in y-up space)
-  const ccw = signedArea(pts) > 0 ? pts : [...pts].reverse()
+  const wasCW = signedArea(pts) < 0
+  const ccw = wasCW ? [...pts].reverse() : pts
   const n = ccw.length
 
   // For each edge compute inward offset line: nx*x + ny*y = c
@@ -68,6 +69,13 @@ export function insetPolygon(pts: Point[], d: number): Point[] {
   const originalArea = shoelaceArea(pts)
   // Collapse detected: result area is tiny OR larger than original (polygon inverted/exploded)
   if (resultArea < 0.001 || resultArea >= originalArea) return []
+
+  // When input was CW, the CCW result[i] corresponds to pts[(n-2-i) mod n].
+  // Rearrange so output[i] corresponds to pts[(i+1) mod n], matching buildPondGeometry's assumption.
+  if (wasCW) {
+    const m = result.length
+    return result.map((_, i) => result[(2 * m - 3 - i) % m])
+  }
   return result
 }
 
