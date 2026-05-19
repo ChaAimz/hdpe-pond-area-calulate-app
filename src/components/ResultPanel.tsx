@@ -1,5 +1,6 @@
 import { usePondStore } from '../store/pondStore'
 import { shoelaceArea } from '../lib/geometry'
+import { useLang } from '../i18n/LangContext'
 
 function StatCard({ label, value, unit, highlight = false }: {
   label: string; value: string; unit: string; highlight?: boolean
@@ -18,12 +19,13 @@ function StatCard({ label, value, unit, highlight = false }: {
 }
 
 export default function ResultPanel() {
+  const { t } = useLang()
   const { points, result, slope } = usePondStore()
 
   const warnings: string[] = []
-  if (points.length > 0 && points.length < 3) warnings.push('วาดอย่างน้อย 3 จุด')
-  if (points.length >= 3 && shoelaceArea(points) < 1) warnings.push('พื้นที่เล็กมาก — ตรวจสอบ scale')
-  if (slope.degrees <= 0 || slope.degrees >= 90) warnings.push('Slope ต้องอยู่ระหว่าง 1°–89°')
+  if (points.length > 0 && points.length < 3) warnings.push(t('warnMinPoints'))
+  if (points.length >= 3 && shoelaceArea(points) < 1) warnings.push(t('warnTinyArea'))
+  if (slope.degrees <= 0 || slope.degrees >= 90) warnings.push(t('warnSlopeRange'))
 
   return (
     <div className="bg-gray-100 border-t border-sky-100 px-4 py-2.5 shrink-0 dark:bg-slate-900 dark:border-sky-900/30">
@@ -39,15 +41,15 @@ export default function ResultPanel() {
       <div className="flex flex-wrap items-start gap-3">
         <div className="flex items-center gap-1.5 shrink-0">
           <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
-          <span className="text-[10px] font-semibold text-gray-700 uppercase tracking-widest dark:text-slate-300">ผลคำนวณ</span>
+          <span className="text-[10px] font-semibold text-gray-700 uppercase tracking-widest dark:text-slate-300">{t('results')}</span>
         </div>
         <div className="flex flex-wrap gap-2 flex-1 min-w-0">
-          <StatCard label="ก้นบ่อ" value={result ? result.floorArea.toFixed(1) : '—'} unit="m²" />
-          <StatCard label="ขอบ Slope" value={result ? result.slopeArea.toFixed(1) : '—'} unit="m²" />
-          <StatCard label="เส้นรอบรูป" value={result ? result.perimeter.toFixed(1) : '—'} unit="m" />
-          <StatCard label="รวม" value={result ? result.totalArea.toFixed(1) : '—'} unit="m²" />
-          <StatCard label="+Overlap" value={result ? result.hdpeArea.toFixed(1) : '—'} unit="m²" />
-          <StatCard label="จำนวน Roll" value={result ? String(result.rollCount) : '—'} unit="rolls" highlight />
+          <StatCard label={t('floorArea')} value={result ? result.floorArea.toFixed(1) : '—'} unit="m²" />
+          <StatCard label={t('slopeArea')} value={result ? result.slopeArea.toFixed(1) : '—'} unit="m²" />
+          <StatCard label={t('perimeter')} value={result ? result.perimeter.toFixed(1) : '—'} unit="m" />
+          <StatCard label={t('totalArea')} value={result ? result.totalArea.toFixed(1) : '—'} unit="m²" />
+          <StatCard label={t('hdpeArea')} value={result ? result.hdpeArea.toFixed(1) : '—'} unit="m²" />
+          <StatCard label={t('rollCount')} value={result ? String(result.rollCount) : '—'} unit="rolls" highlight />
         </div>
       </div>
     </div>

@@ -3,6 +3,7 @@ import { Canvas, useThree } from '@react-three/fiber'
 import { OrbitControls, Line, Html } from '@react-three/drei'
 import { Maximize2, Grid3X3, Ruler } from 'lucide-react'
 import * as THREE from 'three'
+import { useLang } from '../i18n/LangContext'
 import { usePondStore } from '../store/pondStore'
 import { buildPondGeometry } from '../lib/buildPondGeometry'
 
@@ -73,6 +74,7 @@ const SLOPE_STYLE: React.CSSProperties = {
 }
 
 export default function ThreeDViewer() {
+  const { t } = useLang()
   const { points, depth, floorPts, slope } = usePondStore()
   const hasShape = points.length >= 3 && floorPts.length >= 3
 
@@ -171,7 +173,7 @@ export default function ThreeDViewer() {
     <div className="flex-1 flex flex-col min-h-0">
       {/* Toolbar */}
       <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white border-b border-gray-200 shrink-0 flex-wrap dark:bg-slate-900 dark:border-slate-800">
-        <span className="text-xs text-gray-500 dark:text-slate-400">3D View</span>
+        <span className="text-xs text-gray-500 dark:text-slate-400">{t('threeView')}</span>
 
         {/* View presets */}
         <div className="flex gap-1">
@@ -186,21 +188,21 @@ export default function ThreeDViewer() {
         <div className="flex-1" />
 
         {/* Fit / Grid / Dim */}
-        <button title="Fit View" disabled={!hasShape}
+        <button title={t('fitView')} disabled={!hasShape}
           onClick={() => setView('fit')}
           className={hasShape ? BTN_OFF : BTN_DIS}
         ><Maximize2 size={14} /></button>
-        <button title={showGrid ? 'Hide Grid' : 'Show Grid'}
+        <button title={showGrid ? t('hideGrid') : t('showGrid')}
           onClick={() => setShowGrid(g => !g)}
           className={showGrid ? BTN_ON : BTN_DIM_OFF}
         ><Grid3X3 size={14} /></button>
-        <button title={showDims ? 'Hide Dimensions' : 'Show Dimensions'}
+        <button title={showDims ? t('hideDimensions') : t('showDimensions')}
           disabled={!hasShape}
           onClick={() => setShowDims(d => !d)}
           className={!hasShape ? BTN_DIS : showDims ? BTN_DIM_ON : BTN_DIM_OFF}
         ><Ruler size={14} /></button>
 
-        <span className="text-xs text-gray-400 dark:text-slate-600">Drag · Scroll</span>
+        <span className="text-xs text-gray-400 dark:text-slate-600">{t('dragScroll')}</span>
       </div>
 
       {/* Canvas */}
@@ -210,7 +212,7 @@ export default function ThreeDViewer() {
       >
         {autoRotate && (
           <div className="absolute top-2 right-2 z-10 text-xs text-gray-500 pointer-events-none select-none dark:text-slate-500">
-            Auto-rotate — touch to stop
+            {t('autoRotate')}
           </div>
         )}
         <Canvas camera={{ position: [15, 15, 15], fov: 45 }}

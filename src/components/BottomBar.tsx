@@ -1,7 +1,9 @@
 import { usePondStore } from '../store/pondStore'
 import { HDPE_PRESETS } from '../types'
+import { useLang } from '../i18n/LangContext'
 
 export default function BottomBar() {
+  const { t } = useLang()
   const {
     depth, slope, hdpePreset, overlapPercent,
     setDepth, setSlopeRatio, setSlopeDegrees, setHdpePreset, setOverlapPercent,
@@ -12,7 +14,7 @@ export default function BottomBar() {
       <div className="flex flex-wrap gap-x-4 gap-y-2">
 
         <div className="flex min-w-[160px] basis-full flex-col gap-1 md:basis-[calc(50%-0.5rem)] lg:basis-0 lg:flex-1">
-          <label className="text-[10px] text-gray-500 uppercase tracking-widest dark:text-slate-400">ความลึก</label>
+          <label className="text-[10px] text-gray-500 uppercase tracking-widest dark:text-slate-400">{t('depth')}</label>
           <div className="flex items-center gap-1">
             <input type="number" min={0} step={0.1} value={depth}
               onChange={e => setDepth(Math.max(0, parseFloat(e.target.value) || 0))}
@@ -22,7 +24,7 @@ export default function BottomBar() {
         </div>
 
         <div className="flex min-w-[220px] basis-full flex-col gap-1 md:basis-[calc(50%-0.5rem)] lg:basis-0 lg:flex-1">
-          <label className="text-[10px] text-gray-500 uppercase tracking-widest dark:text-slate-400">Slope (H:V ↔ °)</label>
+          <label className="text-[10px] text-gray-500 uppercase tracking-widest dark:text-slate-400">{t('slope')}</label>
           <div className="flex flex-wrap items-center gap-1">
             <input type="number" min={0.1} step={0.1}
               value={parseFloat(slope.ratio.toFixed(2))}
@@ -38,7 +40,7 @@ export default function BottomBar() {
         </div>
 
         <div className="flex min-w-[160px] basis-full flex-col gap-1 md:basis-[calc(50%-0.5rem)] lg:basis-0 lg:flex-1">
-          <label className="text-[10px] text-gray-500 uppercase tracking-widest dark:text-slate-400">HDPE Roll</label>
+          <label className="text-[10px] text-gray-500 uppercase tracking-widest dark:text-slate-400">{t('hdpeRoll')}</label>
           <select value={hdpePreset.label}
             onChange={e => {
               const p = HDPE_PRESETS.find(p => p.label === e.target.value)
@@ -50,7 +52,7 @@ export default function BottomBar() {
         </div>
 
         <div className="flex min-w-[160px] basis-full flex-col gap-1 md:basis-[calc(50%-0.5rem)] lg:basis-0 lg:flex-1">
-          <label className="text-[10px] text-gray-500 uppercase tracking-widest dark:text-slate-400">Overlap</label>
+          <label className="text-[10px] text-gray-500 uppercase tracking-widest dark:text-slate-400">{t('overlap')}</label>
           <div className="flex items-center gap-1">
             <input type="number" min={0} max={50} step={1} value={overlapPercent}
               onChange={e => setOverlapPercent(Math.min(50, Math.max(0, parseInt(e.target.value) || 0)))}

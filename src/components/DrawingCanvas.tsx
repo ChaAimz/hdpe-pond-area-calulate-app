@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from 'react'
 import { RotateCcw, Crosshair, Ruler, Magnet, Undo2, Trash2 } from 'lucide-react'
 import { Stage, Layer, Line, Circle, Text, Rect } from 'react-konva'
 import type { KonvaEventObject } from 'konva/lib/Node'
+import { useLang } from '../i18n/LangContext'
 import { usePondStore } from '../store/pondStore'
 import type { Point } from '../types'
 
@@ -28,6 +29,7 @@ function niceScale(ppm: number, maxPx: number): number {
 }
 
 export default function DrawingCanvas() {
+  const { t } = useLang()
   const containerRef = useRef<HTMLDivElement>(null)
   const [size, setSize] = useState({ width: 600, height: 400 })
   const [cursor, setCursor] = useState<Point | null>(null)
@@ -173,7 +175,7 @@ export default function DrawingCanvas() {
   return (
     <div className="flex-1 flex flex-col min-h-0 border-r border-gray-200 dark:border-slate-800">
       <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white border-b border-gray-200 shrink-0 dark:bg-slate-900 dark:border-slate-800">
-        <span className="text-xs text-gray-500 dark:text-slate-400">Top View (m)</span>
+        <span className="text-xs text-gray-500 dark:text-slate-400">{t('topView')}</span>
         <div className="flex-1" />
         <select
           value={defaultPpm}
@@ -187,11 +189,11 @@ export default function DrawingCanvas() {
             <option key={s.label} value={s.ppm}>{s.label}</option>
           ))}
         </select>
-        <button title="Reset View"
+        <button title={t('resetView')}
           onClick={() => { setPpm(defaultPpm); setOffset({ x: 0, y: 0 }) }}
           className="p-1.5 rounded border border-gray-300 text-gray-500 hover:text-gray-900 hover:border-gray-400 transition-colors dark:border-slate-700 dark:text-slate-400 dark:hover:text-white dark:hover:border-slate-500"
         ><RotateCcw size={14} /></button>
-        <button title="Center on polygon"
+        <button title={t('centerPolygon')}
           disabled={points.length === 0}
           onClick={() => {
             const cx = points.reduce((s, p) => s + p.x, 0) / points.length
@@ -200,20 +202,20 @@ export default function DrawingCanvas() {
           }}
           className="p-1.5 rounded border border-gray-300 text-gray-500 hover:text-gray-900 hover:border-gray-400 transition-colors disabled:opacity-30 dark:border-slate-700 dark:text-slate-400 dark:hover:text-white dark:hover:border-slate-500"
         ><Crosshair size={14} /></button>
-        <button title={showDims ? 'Hide Dimensions' : 'Show Dimensions'}
+        <button title={showDims ? t('hideDimensions') : t('showDimensions')}
           onClick={() => setShowDims(d => !d)}
           className={`p-1.5 rounded border transition-colors ${showDims ? 'bg-amber-500/10 border-amber-500 text-amber-500 dark:text-amber-400' : 'border-gray-300 text-gray-400 hover:text-gray-500 dark:border-slate-700 dark:text-slate-600 dark:hover:text-slate-400'}`}
         ><Ruler size={14} /></button>
-        <button title={snapEnabled ? 'Snap ON' : 'Snap OFF'}
+        <button title={snapEnabled ? t('snapOn') : t('snapOff')}
           onClick={toggleSnap}
           className={`p-1.5 rounded border transition-colors ${snapEnabled ? 'bg-sky-500/10 border-sky-500 text-sky-500 dark:text-sky-400' : 'border-gray-300 text-gray-400 hover:text-gray-500 dark:border-slate-700 dark:text-slate-600 dark:hover:text-slate-400'}`}
         ><Magnet size={14} /></button>
-        <button title="Undo last point"
+        <button title={t('undoPoint')}
           onClick={removeLastPoint}
           disabled={points.length === 0}
           className="p-1.5 rounded border border-gray-300 text-gray-500 hover:text-gray-900 hover:border-gray-400 transition-colors disabled:opacity-30 dark:border-slate-700 dark:text-slate-400 dark:hover:text-white dark:hover:border-slate-500"
         ><Undo2 size={14} /></button>
-        <button title="Clear all points"
+        <button title={t('clearAll')}
           onClick={clearPoints}
           disabled={points.length === 0}
           className="p-1.5 rounded border border-red-200 text-red-500 hover:text-red-600 hover:border-red-400 transition-colors disabled:opacity-30 dark:border-red-900 dark:text-red-400 dark:hover:text-red-300 dark:hover:border-red-700"
