@@ -146,7 +146,7 @@ export default function ThreeDViewer() {
             ))}
           </group>
 
-          {showGrid && <gridHelper args={[50, 50, '#1e3a5f', '#1e293b']} />}
+          {showGrid && <gridHelper args={[50, 50, '#1e3a5f', '#1e293b']} position={[0, hasShape ? -depth / 2 : 0, 0]} />}
           <FitCamera trigger={fitTrigger} radius={radius} />
         </Canvas>
       </div>
