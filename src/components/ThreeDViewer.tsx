@@ -15,6 +15,20 @@ export default function ThreeDViewer() {
        new THREE.Vector3(points[0].x, 0, -points[0].y)]
     : []
 
+  const floorRimPts = hasShape
+    ? [...floorPts.map(fp => new THREE.Vector3(fp.x, -depth, -fp.y)),
+       new THREE.Vector3(floorPts[0].x, -depth, -floorPts[0].y)]
+    : []
+
+  // floor[(i-1+m)%m] is the floor corner nearest to top[i]
+  const slopeEdges = hasShape
+    ? points.map((p, i) => {
+        const m = floorPts.length
+        const fp = floorPts[(i - 1 + m) % m]
+        return [new THREE.Vector3(p.x, 0, -p.y), new THREE.Vector3(fp.x, -depth, -fp.y)]
+      })
+    : []
+
   return (
     <div className="flex-1 flex flex-col min-h-0">
       <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-900 border-b border-slate-800 shrink-0 text-xs">
@@ -38,6 +52,12 @@ export default function ThreeDViewer() {
           {rimPts.length > 0 && (
             <Line points={rimPts} color="#93c5fd" lineWidth={2} />
           )}
+          {floorRimPts.length > 0 && (
+            <Line points={floorRimPts} color="#60a5fa" lineWidth={1.5} />
+          )}
+          {slopeEdges.map((pts, i) => (
+            <Line key={`se${i}`} points={pts} color="#60a5fa" lineWidth={1} />
+          ))}
 
           <gridHelper args={[50, 50, '#1e3a5f', '#1e293b']} />
           <OrbitControls makeDefault enablePan />
