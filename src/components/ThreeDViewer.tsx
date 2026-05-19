@@ -23,7 +23,7 @@ export default function ThreeDViewer() {
         <span className="text-slate-600">Drag · Scroll to zoom</span>
       </div>
       <div className="flex-1">
-        <Canvas camera={{ position: [15, 15, 15], fov: 45 }} style={{ background: '#0c1220' }}>
+        <Canvas camera={{ position: [15, 15, 15], fov: 45 }} gl={{ preserveDrawingBuffer: true }} style={{ background: '#0c1220' }}>
           <ambientLight intensity={0.5} />
           <directionalLight position={[10, 20, 10]} intensity={0.8} />
           <directionalLight position={[-8, 5, -8]} intensity={0.3} color="#4488ff" />

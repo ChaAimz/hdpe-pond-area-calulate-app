@@ -21,6 +21,7 @@
     "@types/three": "^0.184.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "html-to-image": "^1.11.13",
     "konva": "^10.3.0",
     "lucide-react": "^1.16.0",
     "react": "^19.2.6",
