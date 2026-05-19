@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react'
+import { RotateCcw, Crosshair, Ruler, Magnet, Undo2, Trash2 } from 'lucide-react'
 import { Stage, Layer, Line, Circle, Text, Rect } from 'react-konva'
 import type { KonvaEventObject } from 'konva/lib/Node'
 import { usePondStore } from '../store/pondStore'
@@ -171,8 +172,8 @@ export default function DrawingCanvas() {
 
   return (
     <div className="flex-1 flex flex-col min-h-0 border-r border-slate-800">
-      <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-900 border-b border-slate-800 shrink-0 text-xs">
-        <span className="text-slate-400">Top View (m)</span>
+      <div className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 border-b border-slate-800 shrink-0">
+        <span className="text-xs text-slate-400">Top View (m)</span>
         <div className="flex-1" />
         <select
           value={defaultPpm}
@@ -186,60 +187,37 @@ export default function DrawingCanvas() {
             <option key={s.label} value={s.ppm}>{s.label}</option>
           ))}
         </select>
-        <button
+        <button title="Reset View"
           onClick={() => { setPpm(defaultPpm); setOffset({ x: 0, y: 0 }) }}
-          className="px-2 py-0.5 rounded border border-slate-700 text-slate-400 hover:text-white transition-colors"
-        >
-          Reset View
-        </button>
-        <button
+          className="p-1.5 rounded border border-slate-700 text-slate-400 hover:text-white hover:border-slate-500 transition-colors"
+        ><RotateCcw size={14} /></button>
+        <button title="Center on polygon"
           disabled={points.length === 0}
           onClick={() => {
             const cx = points.reduce((s, p) => s + p.x, 0) / points.length
             const cy = points.reduce((s, p) => s + p.y, 0) / points.length
-            setOffset({
-              x: size.width / 2 - cx * ppm,
-              y: cy * ppm - size.height / 2,
-            })
+            setOffset({ x: size.width / 2 - cx * ppm, y: cy * ppm - size.height / 2 })
           }}
-          className="px-2 py-0.5 rounded border border-slate-700 text-slate-400 hover:text-white transition-colors disabled:opacity-30"
-        >
-          Center
-        </button>
-        <button
+          className="p-1.5 rounded border border-slate-700 text-slate-400 hover:text-white hover:border-slate-500 transition-colors disabled:opacity-30"
+        ><Crosshair size={14} /></button>
+        <button title={showDims ? 'Hide Dimensions' : 'Show Dimensions'}
           onClick={() => setShowDims(d => !d)}
-          className={`px-2 py-0.5 rounded border transition-colors ${
-            showDims
-              ? 'bg-amber-500/10 border-amber-500 text-amber-400'
-              : 'border-slate-700 text-slate-500'
-          }`}
-        >
-          Dim
-        </button>
-        <button
+          className={`p-1.5 rounded border transition-colors ${showDims ? 'bg-amber-500/10 border-amber-500 text-amber-400' : 'border-slate-700 text-slate-600 hover:text-slate-400'}`}
+        ><Ruler size={14} /></button>
+        <button title={snapEnabled ? 'Snap ON' : 'Snap OFF'}
           onClick={toggleSnap}
-          className={`px-2 py-0.5 rounded border transition-colors ${
-            snapEnabled
-              ? 'bg-sky-500/10 border-sky-500 text-sky-400'
-              : 'border-slate-700 text-slate-500'
-          }`}
-        >
-          Snap {snapEnabled ? 'ON' : 'OFF'}
-        </button>
-        <button
+          className={`p-1.5 rounded border transition-colors ${snapEnabled ? 'bg-sky-500/10 border-sky-500 text-sky-400' : 'border-slate-700 text-slate-600 hover:text-slate-400'}`}
+        ><Magnet size={14} /></button>
+        <button title="Undo last point"
           onClick={removeLastPoint}
           disabled={points.length === 0}
-          className="px-2 py-0.5 rounded border border-slate-700 text-slate-400 disabled:opacity-30"
-        >
-          Undo
-        </button>
-        <button
+          className="p-1.5 rounded border border-slate-700 text-slate-400 hover:text-white hover:border-slate-500 transition-colors disabled:opacity-30"
+        ><Undo2 size={14} /></button>
+        <button title="Clear all points"
           onClick={clearPoints}
           disabled={points.length === 0}
-          className="px-2 py-0.5 rounded border border-red-800 text-red-400 disabled:opacity-30"
-        >
-          Clear
-        </button>
+          className="p-1.5 rounded border border-red-900 text-red-500 hover:text-red-300 hover:border-red-700 transition-colors disabled:opacity-30"
+        ><Trash2 size={14} /></button>
       </div>
 
       <div ref={containerRef} className={`flex-1 overflow-hidden ${cursorClass}`}>
