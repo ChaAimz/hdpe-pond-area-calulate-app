@@ -10,6 +10,14 @@ function snapToGrid(val: number): number {
 
 const SUB = 5
 
+const SCALE_PRESETS = [
+  { label: '1:25',  ppm: 160 },
+  { label: '1:50',  ppm: 80  },
+  { label: '1:100', ppm: 40  },
+  { label: '1:200', ppm: 20  },
+  { label: '1:500', ppm: 8   },
+]
+
 function niceScale(ppm: number, maxPx: number): number {
   const maxM = maxPx / ppm
   for (const v of [200, 100, 50, 20, 10, 5, 2, 1, 0.5, 0.2, 0.1]) {
@@ -23,6 +31,7 @@ export default function DrawingCanvas() {
   const [size, setSize] = useState({ width: 600, height: 400 })
   const [cursor, setCursor] = useState<Point | null>(null)
   const [rawPos, setRawPos] = useState<{ x: number; y: number } | null>(null)
+  const [defaultPpm, setDefaultPpm] = useState(40)
   const [ppm, setPpm] = useState(40)
   const [offset, setOffset] = useState({ x: 0, y: 0 })
   const [midDrag, setMidDrag] = useState<{ x: number; y: number } | null>(null)
@@ -164,8 +173,20 @@ export default function DrawingCanvas() {
       <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-900 border-b border-slate-800 shrink-0 text-xs">
         <span className="text-slate-400">Top View (m)</span>
         <div className="flex-1" />
+        <select
+          value={defaultPpm}
+          onChange={e => {
+            const p = Number(e.target.value)
+            setDefaultPpm(p); setPpm(p); setOffset({ x: 0, y: 0 })
+          }}
+          className="px-1 py-0.5 rounded border border-slate-700 bg-slate-900 text-slate-400 text-xs"
+        >
+          {SCALE_PRESETS.map(s => (
+            <option key={s.label} value={s.ppm}>{s.label}</option>
+          ))}
+        </select>
         <button
-          onClick={() => { setPpm(40); setOffset({ x: 0, y: 0 }) }}
+          onClick={() => { setPpm(defaultPpm); setOffset({ x: 0, y: 0 }) }}
           className="px-2 py-0.5 rounded border border-slate-700 text-slate-400 hover:text-white transition-colors"
         >
           Reset View
