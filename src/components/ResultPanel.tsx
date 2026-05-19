@@ -1,7 +1,54 @@
-export default function ResultPanel() {
+import { usePondStore } from '../store/pondStore'
+import { shoelaceArea } from '../lib/geometry'
+
+function StatCard({ label, value, unit, highlight = false }: {
+  label: string; value: string; unit: string; highlight?: boolean
+}) {
   return (
-    <div className="bg-slate-900 border-t border-slate-800 px-4 py-3">
-      <span className="text-slate-600 text-sm">Results</span>
+    <div className={`flex-1 rounded-lg px-3 py-2 text-center min-w-[80px] ${
+      highlight ? 'bg-green-950/40 border border-green-900/40' : 'bg-slate-800'
+    }`}>
+      <div className="text-[9px] text-slate-500 uppercase tracking-widest mb-0.5">{label}</div>
+      <div className={`text-lg font-bold tabular-nums ${highlight ? 'text-green-400' : 'text-sky-400'}`}>
+        {value}
+      </div>
+      <div className="text-[9px] text-slate-600">{unit}</div>
+    </div>
+  )
+}
+
+export default function ResultPanel() {
+  const { points, result, slope } = usePondStore()
+
+  const warnings: string[] = []
+  if (points.length > 0 && points.length < 3) warnings.push('วาดอย่างน้อย 3 จุด')
+  if (points.length >= 3 && shoelaceArea(points) < 1) warnings.push('พื้นที่เล็กมาก — ตรวจสอบ scale')
+  if (slope.degrees <= 0 || slope.degrees >= 90) warnings.push('Slope ต้องอยู่ระหว่าง 1°–89°')
+
+  return (
+    <div className="bg-slate-900 border-t border-sky-900/30 px-4 py-2.5 shrink-0">
+      {warnings.length > 0 && (
+        <div className="flex gap-2 mb-2 flex-wrap">
+          {warnings.map(w => (
+            <span key={w} className="text-xs bg-amber-950/50 border border-amber-800/50 text-amber-400 rounded px-2 py-0.5">
+              ⚠ {w}
+            </span>
+          ))}
+        </div>
+      )}
+      <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1.5 shrink-0">
+          <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+          <span className="text-[10px] font-semibold text-slate-300 uppercase tracking-widest">ผลคำนวณ</span>
+        </div>
+        <div className="flex gap-2 flex-1 flex-wrap">
+          <StatCard label="ก้นบ่อ" value={result ? result.floorArea.toFixed(1) : '—'} unit="m²" />
+          <StatCard label="ขอบ Slope" value={result ? result.slopeArea.toFixed(1) : '—'} unit="m²" />
+          <StatCard label="รวม" value={result ? result.totalArea.toFixed(1) : '—'} unit="m²" />
+          <StatCard label="+Overlap" value={result ? result.hdpeArea.toFixed(1) : '—'} unit="m²" />
+          <StatCard label="จำนวน Roll" value={result ? String(result.rollCount) : '—'} unit="rolls" highlight />
+        </div>
+      </div>
     </div>
   )
 }
