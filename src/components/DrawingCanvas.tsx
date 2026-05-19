@@ -311,7 +311,7 @@ export default function DrawingCanvas() {
                 return (
                   <React.Fragment key={`dim${i}`}>
                     <Rect x={lx - tw / 2} y={ly - 9} width={tw} height={14}
-                      fill="#1e293b" stroke="#f59e0b" strokeWidth={0.6} cornerRadius={2} />
+                      fill="rgba(15,23,42,0.85)" stroke="#92400e" strokeWidth={1} cornerRadius={3} />
                     <Text x={lx - tw / 2 + 4} y={ly - 6}
                       text={label} fill="#fbbf24" fontSize={9} />
                   </React.Fragment>
