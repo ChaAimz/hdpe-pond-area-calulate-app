@@ -5,7 +5,7 @@ function StatCard({ label, value, unit, highlight = false }: {
   label: string; value: string; unit: string; highlight?: boolean
 }) {
   return (
-    <div className={`flex-1 rounded-lg px-3 py-2 text-center min-w-[80px] ${
+    <div className={`basis-[calc(50%-0.5rem)] min-w-[110px] rounded-lg px-3 py-2 text-center md:basis-0 md:flex-1 ${
       highlight ? 'bg-green-950/40 border border-green-900/40' : 'bg-slate-800'
     }`}>
       <div className="text-[9px] text-slate-500 uppercase tracking-widest mb-0.5">{label}</div>
@@ -36,12 +36,12 @@ export default function ResultPanel() {
           ))}
         </div>
       )}
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-start gap-3">
         <div className="flex items-center gap-1.5 shrink-0">
           <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
           <span className="text-[10px] font-semibold text-slate-300 uppercase tracking-widest">ผลคำนวณ</span>
         </div>
-        <div className="flex gap-2 flex-1 flex-wrap">
+        <div className="flex flex-wrap gap-2 flex-1 min-w-0">
           <StatCard label="ก้นบ่อ" value={result ? result.floorArea.toFixed(1) : '—'} unit="m²" />
           <StatCard label="ขอบ Slope" value={result ? result.slopeArea.toFixed(1) : '—'} unit="m²" />
           <StatCard label="เส้นรอบรูป" value={result ? result.perimeter.toFixed(1) : '—'} unit="m" />

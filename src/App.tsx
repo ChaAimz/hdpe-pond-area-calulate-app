@@ -56,7 +56,7 @@ export default function App() {
         </div>
       </header>
 
-      <div className="flex flex-1 min-h-0">
+      <div className="flex flex-1 min-h-0 flex-col lg:flex-row">
         <DrawingCanvas />
         <ThreeDViewer />
       </div>

@@ -9,9 +9,9 @@ export default function BottomBar() {
 
   return (
     <div className="bg-slate-900 border-t border-slate-800 px-4 py-2 shrink-0">
-      <div className="flex items-center gap-4 flex-wrap">
+      <div className="flex flex-wrap gap-x-4 gap-y-2">
 
-        <div className="flex flex-col gap-1">
+        <div className="flex min-w-[160px] basis-full flex-col gap-1 md:basis-[calc(50%-0.5rem)] lg:basis-0 lg:flex-1">
           <label className="text-[10px] text-slate-500 uppercase tracking-widest">ความลึก</label>
           <div className="flex items-center gap-1">
             <input type="number" min={0} step={0.1} value={depth}
@@ -21,11 +21,9 @@ export default function BottomBar() {
           </div>
         </div>
 
-        <div className="w-px h-8 bg-slate-700" />
-
-        <div className="flex flex-col gap-1">
+        <div className="flex min-w-[220px] basis-full flex-col gap-1 md:basis-[calc(50%-0.5rem)] lg:basis-0 lg:flex-1">
           <label className="text-[10px] text-slate-500 uppercase tracking-widest">Slope (H:V ↔ °)</label>
-          <div className="flex items-center gap-1">
+          <div className="flex flex-wrap items-center gap-1">
             <input type="number" min={0.1} step={0.1}
               value={parseFloat(slope.ratio.toFixed(2))}
               onChange={e => setSlopeRatio(Math.max(0.1, parseFloat(e.target.value) || 0.1))}
@@ -39,9 +37,7 @@ export default function BottomBar() {
           </div>
         </div>
 
-        <div className="w-px h-8 bg-slate-700" />
-
-        <div className="flex flex-col gap-1">
+        <div className="flex min-w-[160px] basis-full flex-col gap-1 md:basis-[calc(50%-0.5rem)] lg:basis-0 lg:flex-1">
           <label className="text-[10px] text-slate-500 uppercase tracking-widest">HDPE Roll</label>
           <select value={hdpePreset.label}
             onChange={e => {
@@ -53,9 +49,7 @@ export default function BottomBar() {
           </select>
         </div>
 
-        <div className="w-px h-8 bg-slate-700" />
-
-        <div className="flex flex-col gap-1">
+        <div className="flex min-w-[160px] basis-full flex-col gap-1 md:basis-[calc(50%-0.5rem)] lg:basis-0 lg:flex-1">
           <label className="text-[10px] text-slate-500 uppercase tracking-widest">Overlap</label>
           <div className="flex items-center gap-1">
             <input type="number" min={0} max={50} step={1} value={overlapPercent}
