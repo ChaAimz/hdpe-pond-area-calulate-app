@@ -8,14 +8,19 @@ function snapToGrid(val: number): number {
   return Math.round(val)
 }
 
+const SUB = 5
+
 export default function DrawingCanvas() {
   const containerRef = useRef<HTMLDivElement>(null)
   const [size, setSize] = useState({ width: 600, height: 400 })
   const [cursor, setCursor] = useState<Point | null>(null)
   const [rawPos, setRawPos] = useState<{ x: number; y: number } | null>(null)
+  const [ppm, setPpm] = useState(40)
+  const [offset, setOffset] = useState({ x: 0, y: 0 })
+  const [midDrag, setMidDrag] = useState<{ x: number; y: number } | null>(null)
 
   const {
-    points, isClosed, snapEnabled, pxPerMeter, floorPts,
+    points, isClosed, snapEnabled, floorPts,
     addPoint, updatePoint, removeLastPoint, clearPoints, toggleSnap, closePolygon,
   } = usePondStore()
 
@@ -32,19 +37,45 @@ export default function DrawingCanvas() {
   }, [])
 
   const toReal = (sx: number, sy: number): Point => ({
-    x: sx / pxPerMeter,
-    y: (size.height - sy) / pxPerMeter,
+    x: (sx - offset.x) / ppm,
+    y: (size.height - sy + offset.y) / ppm,
   })
 
   const toScreen = (p: Point) => ({
-    x: p.x * pxPerMeter,
-    y: size.height - p.y * pxPerMeter,
+    x: p.x * ppm + offset.x,
+    y: size.height - p.y * ppm + offset.y,
   })
 
   const snap = (p: Point): Point =>
     snapEnabled ? { x: snapToGrid(p.x), y: snapToGrid(p.y) } : p
 
+  function handleWheel(e: KonvaEventObject<WheelEvent>) {
+    e.evt.preventDefault()
+    const pos = e.target.getStage()?.getPointerPosition()
+    if (!pos) return
+    const factor = e.evt.deltaY < 0 ? 1.1 : 1 / 1.1
+    const newPpm = Math.max(5, Math.min(200, ppm * factor))
+    const scale = newPpm / ppm
+    setOffset(o => ({
+      x: pos.x + (o.x - pos.x) * scale,
+      y: (size.height - pos.y) * (scale - 1) + o.y * scale,
+    }))
+    setPpm(newPpm)
+  }
+
+  function handleMouseDown(e: KonvaEventObject<MouseEvent>) {
+    if (e.evt.button === 1) {
+      e.evt.preventDefault()
+      setMidDrag({ x: e.evt.clientX, y: e.evt.clientY })
+    }
+  }
+
+  function handleMouseUp(e: KonvaEventObject<MouseEvent>) {
+    if (e.evt.button === 1) setMidDrag(null)
+  }
+
   function handleStageClick(e: KonvaEventObject<MouseEvent>) {
+    if (e.evt.button !== 0) return
     const pos = e.target.getStage()?.getPointerPosition()
     if (!pos) return
     if (isClosed) return
@@ -62,6 +93,15 @@ export default function DrawingCanvas() {
   function handleMouseMove(e: KonvaEventObject<MouseEvent>) {
     const pos = e.target.getStage()?.getPointerPosition()
     if (!pos) return
+
+    if (midDrag) {
+      const dx = e.evt.clientX - midDrag.x
+      const dy = e.evt.clientY - midDrag.y
+      setOffset(o => ({ x: o.x + dx, y: o.y + dy }))
+      setMidDrag({ x: e.evt.clientX, y: e.evt.clientY })
+      return
+    }
+
     setRawPos(pos)
     setCursor(snap(toReal(pos.x, pos.y)))
   }
@@ -72,7 +112,6 @@ export default function DrawingCanvas() {
       ? Math.sqrt((cursor.x - lastPt.x) ** 2 + (cursor.y - lastPt.y) ** 2)
       : null
 
-  // highlight first point when cursor is within snap radius (px-based)
   const nearFirst =
     !isClosed && points.length >= 3 && rawPos
       ? Math.hypot(rawPos.x - toScreen(points[0]).x, rawPos.y - toScreen(points[0]).y) < 14
@@ -81,26 +120,42 @@ export default function DrawingCanvas() {
   const toFlat = (pts: Point[]) => pts.flatMap(p => [toScreen(p).x, toScreen(p).y])
 
   const lineFlat = toFlat(points)
-  // open polyline while drawing; closed fill only after isClosed
   const polyFlat = isClosed ? [...lineFlat, lineFlat[0], lineFlat[1]] : lineFlat
   const cursorFlat =
     !isClosed && lastPt && cursor
       ? [toScreen(lastPt).x, toScreen(lastPt).y, toScreen(cursor).x, toScreen(cursor).y]
       : []
-
   const floorFlat = floorPts.length >= 3 ? toFlat(floorPts) : []
 
-  const mX = Math.ceil(size.width / pxPerMeter) + 1
-  const mY = Math.ceil(size.height / pxPerMeter) + 1
-  const SUB = 5
-  const gx = Array.from({ length: mX * SUB + 1 }, (_, i) => (i * pxPerMeter) / SUB)
-  const gy = Array.from({ length: mY * SUB + 1 }, (_, i) => size.height - (i * pxPerMeter) / SUB)
+  // Grid: compute visible lines in screen space
+  const minorStep = ppm / SUB
+  const kXLeft = Math.floor(-offset.x / minorStep) - 1
+  const kXRight = Math.ceil((size.width - offset.x) / minorStep) + 1
+  const gxLines = Array.from({ length: Math.max(0, kXRight - kXLeft + 1) }, (_, i) => {
+    const k = kXLeft + i
+    return { x: k * minorStep + offset.x, major: k % SUB === 0 }
+  }).filter(l => l.x >= -1 && l.x <= size.width + 1)
+
+  const kYBottom = Math.floor(offset.y / minorStep) - 1
+  const kYTop = Math.ceil((size.height + offset.y) / minorStep) + 1
+  const gyLines = Array.from({ length: Math.max(0, kYTop - kYBottom + 1) }, (_, i) => {
+    const k = kYBottom + i
+    return { y: size.height + offset.y - k * minorStep, major: k % SUB === 0 }
+  }).filter(l => l.y >= -1 && l.y <= size.height + 1)
+
+  const cursorClass = midDrag ? 'cursor-grabbing' : (isClosed ? 'cursor-default' : 'cursor-crosshair')
 
   return (
     <div className="flex-1 flex flex-col min-h-0 border-r border-slate-800">
       <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-900 border-b border-slate-800 shrink-0 text-xs">
         <span className="text-slate-400">Top View (m)</span>
         <div className="flex-1" />
+        <button
+          onClick={() => { setPpm(40); setOffset({ x: 0, y: 0 }) }}
+          className="px-2 py-0.5 rounded border border-slate-700 text-slate-400 hover:text-white transition-colors"
+        >
+          Reset View
+        </button>
         <button
           onClick={toggleSnap}
           className={`px-2 py-0.5 rounded border transition-colors ${
@@ -127,30 +182,31 @@ export default function DrawingCanvas() {
         </button>
       </div>
 
-      <div ref={containerRef} className={`flex-1 overflow-hidden ${isClosed ? 'cursor-default' : 'cursor-crosshair'}`}>
+      <div ref={containerRef} className={`flex-1 overflow-hidden ${cursorClass}`}>
         <Stage
           width={size.width}
           height={size.height}
           onClick={handleStageClick}
           onMouseMove={handleMouseMove}
-          onMouseLeave={() => { setCursor(null); setRawPos(null) }}
+          onMouseDown={handleMouseDown}
+          onMouseUp={handleMouseUp}
+          onWheel={handleWheel}
+          onMouseLeave={() => { setCursor(null); setRawPos(null); setMidDrag(null) }}
         >
-          {/* Grid */}
           <Layer listening={false}>
-            {gx.map((x, i) => (
-              <Line key={`gx${i}`} points={[x, 0, x, size.height]}
-                stroke={i % SUB === 0 ? '#1e3a5f' : '#152030'}
-                strokeWidth={i % SUB === 0 ? 0.8 : 0.4} />
+            {gxLines.map((l, i) => (
+              <Line key={`gx${i}`} points={[l.x, 0, l.x, size.height]}
+                stroke={l.major ? '#1e3a5f' : '#152030'}
+                strokeWidth={l.major ? 0.8 : 0.4} />
             ))}
-            {gy.map((y, i) => (
-              <Line key={`gy${i}`} points={[0, y, size.width, y]}
-                stroke={i % SUB === 0 ? '#1e3a5f' : '#152030'}
-                strokeWidth={i % SUB === 0 ? 0.8 : 0.4} />
+            {gyLines.map((l, i) => (
+              <Line key={`gy${i}`} points={[0, l.y, size.width, l.y]}
+                stroke={l.major ? '#1e3a5f' : '#152030'}
+                strokeWidth={l.major ? 0.8 : 0.4} />
             ))}
           </Layer>
 
           <Layer>
-            {/* Top polygon — fill only when closed, open polyline while drawing */}
             {points.length >= 1 && (
               <Line
                 points={polyFlat}
@@ -161,14 +217,12 @@ export default function DrawingCanvas() {
               />
             )}
 
-            {/* Floor polygon (dashed) */}
             {floorFlat.length > 0 && (
               <Line points={[...floorFlat, floorFlat[0], floorFlat[1]]} closed
                 stroke="#3b82f6" strokeWidth={1} dash={[5, 3]}
                 fill="rgba(30,64,175,0.15)" />
             )}
 
-            {/* Cursor guide line + distance label */}
             {cursorFlat.length > 0 && (
               <Line points={cursorFlat} stroke="#f59e0b" strokeWidth={1} dash={[4, 3]} />
             )}
@@ -182,7 +236,6 @@ export default function DrawingCanvas() {
               </>
             )}
 
-            {/* Point handles */}
             {points.map((p, i) => {
               const s = toScreen(p)
               const isFirst = i === 0
