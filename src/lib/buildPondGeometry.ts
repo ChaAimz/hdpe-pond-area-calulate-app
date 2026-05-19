@@ -21,10 +21,15 @@ export function buildPondGeometry(
   // Floor face: fan triangulation (CCW when viewed from below)
   for (let i = 1; i < m - 1; i++) indices.push(0, i + 1, i)
 
-  // Slope quads (2 triangles per edge)
+  // Slope quads (2 triangles per edge).
+  // insetPolygon returns floor[k] at the corner between top edge k and k+1,
+  // so floor[k] corresponds to top[(k+1)%n]. Accounting for this 1-step offset:
+  //   floor corner near top[i]   = floor[(i + m - 1) % m]
+  //   floor corner near top[j]   = floor[i % m]
   for (let i = 0; i < n; i++) {
     const j = (i + 1) % n
-    const fi = i % m, fj = j % m
+    const fi = (i + m - 1) % m   // floor vertex spatially near top[i]
+    const fj = i % m              // floor vertex spatially near top[j]
     const ti = m + i, tj = m + j
     indices.push(fi, fj, tj, fi, tj, ti)
   }
