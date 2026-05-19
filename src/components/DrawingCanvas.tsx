@@ -44,7 +44,8 @@ export default function DrawingCanvas() {
     snapEnabled ? { x: snapToGrid(p.x), y: snapToGrid(p.y) } : p
 
   function handleStageClick(e: KonvaEventObject<MouseEvent>) {
-    const pos = e.target.getStage()!.getPointerPosition()!
+    const pos = e.target.getStage()?.getPointerPosition()
+    if (!pos) return
     const real = snap(toReal(pos.x, pos.y))
 
     if (points.length >= 3) {
