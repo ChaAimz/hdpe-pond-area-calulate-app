@@ -39,11 +39,29 @@ export default function DrawingCanvas() {
   const [offset, setOffset] = useState({ x: 0, y: 0 })
   const [midDrag, setMidDrag] = useState<{ x: number; y: number } | null>(null)
   const [showDims, setShowDims] = useState(false)
+  const [editingEdge, setEditingEdge] = useState<{
+    index: number; inputValue: string; x: number; y: number
+  } | null>(null)
 
   const {
     points, isClosed, snapEnabled, floorPts,
     addPoint, updatePoint, removeLastPoint, clearPoints, toggleSnap, closePolygon,
   } = usePondStore()
+
+  function confirmEdgeEdit() {
+    if (!editingEdge) return
+    const newLen = parseFloat(editingEdge.inputValue)
+    if (isNaN(newLen) || newLen <= 0) { setEditingEdge(null); return }
+    const n = points.length
+    const a = points[editingEdge.index]
+    const b = points[(editingEdge.index + 1) % n]
+    const dx = b.x - a.x, dy = b.y - a.y
+    const curLen = Math.sqrt(dx * dx + dy * dy)
+    if (curLen < 1e-10) { setEditingEdge(null); return }
+    const scale = newLen / curLen
+    updatePoint((editingEdge.index + 1) % n, { x: a.x + dx * scale, y: a.y + dy * scale })
+    setEditingEdge(null)
+  }
 
   useEffect(() => {
     if (!containerRef.current) return
@@ -222,7 +240,7 @@ export default function DrawingCanvas() {
         ><Trash2 size={14} /></button>
       </div>
 
-      <div ref={containerRef} className={`flex-1 overflow-hidden ${cursorClass}`}>
+      <div ref={containerRef} className={`flex-1 overflow-hidden relative ${cursorClass}`}>
         <Stage
           width={size.width}
           height={size.height}
@@ -313,9 +331,16 @@ export default function DrawingCanvas() {
                 return (
                   <React.Fragment key={`dim${i}`}>
                     <Rect x={lx - tw / 2} y={ly - 9} width={tw} height={14}
-                      fill="rgba(15,23,42,0.85)" stroke="#92400e" strokeWidth={1} cornerRadius={3} />
+                      fill="rgba(15,23,42,0.85)" stroke="#92400e" strokeWidth={1} cornerRadius={3}
+                      onClick={(e) => {
+                        e.cancelBubble = true
+                        setEditingEdge({ index: i, inputValue: realLen.toFixed(2), x: lx, y: ly - 9 })
+                      }}
+                      onMouseEnter={e => { e.target.stroke('#fbbf24'); e.target.getLayer()?.batchDraw() }}
+                      onMouseLeave={e => { e.target.stroke('#92400e'); e.target.getLayer()?.batchDraw() }}
+                    />
                     <Text x={lx - tw / 2 + 4} y={ly - 6}
-                      text={label} fill="#fbbf24" fontSize={9} />
+                      text={label} fill="#fbbf24" fontSize={9} listening={false} />
                   </React.Fragment>
                 )
               })
@@ -329,6 +354,44 @@ export default function DrawingCanvas() {
               text={scaleLabel} fill="#94a3b8" fontSize={10} />
           </Layer>
         </Stage>
+
+        {/* Edge-length edit popover */}
+        {editingEdge && (
+          <>
+            <div className="absolute inset-0 z-40" onClick={() => setEditingEdge(null)} />
+            <div
+              className="absolute z-50 bg-slate-900 dark:bg-slate-900 border border-sky-700 rounded-lg shadow-2xl p-3 flex flex-col gap-2 min-w-[160px]"
+              style={{ left: editingEdge.x, top: editingEdge.y - 72, transform: 'translateX(-50%)' }}
+            >
+              <div className="text-xs text-slate-400 font-medium">แก้ไขความยาวเส้น</div>
+              <div className="flex items-center gap-1.5">
+                <input
+                  autoFocus
+                  type="number" min="0.01" step="0.01"
+                  value={editingEdge.inputValue}
+                  onChange={e => setEditingEdge(ev => ev ? { ...ev, inputValue: e.target.value } : null)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') confirmEdgeEdit()
+                    if (e.key === 'Escape') setEditingEdge(null)
+                    e.stopPropagation()
+                  }}
+                  className="w-24 px-2 py-1 text-sm bg-slate-800 border border-slate-600 rounded text-white focus:border-sky-500 focus:outline-none"
+                />
+                <span className="text-xs text-slate-400">m</span>
+              </div>
+              <div className="flex gap-1.5">
+                <button onClick={confirmEdgeEdit}
+                  className="flex-1 text-xs py-1 bg-sky-600 hover:bg-sky-500 rounded text-white transition-colors">
+                  OK
+                </button>
+                <button onClick={() => setEditingEdge(null)}
+                  className="flex-1 text-xs py-1 bg-slate-700 hover:bg-slate-600 rounded text-white transition-colors">
+                  ยกเลิก
+                </button>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   )
