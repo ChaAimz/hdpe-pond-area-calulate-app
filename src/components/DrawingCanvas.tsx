@@ -192,6 +192,20 @@ export default function DrawingCanvas() {
           Reset View
         </button>
         <button
+          disabled={points.length === 0}
+          onClick={() => {
+            const cx = points.reduce((s, p) => s + p.x, 0) / points.length
+            const cy = points.reduce((s, p) => s + p.y, 0) / points.length
+            setOffset({
+              x: size.width / 2 - cx * ppm,
+              y: cy * ppm - size.height / 2,
+            })
+          }}
+          className="px-2 py-0.5 rounded border border-slate-700 text-slate-400 hover:text-white transition-colors disabled:opacity-30"
+        >
+          Center
+        </button>
+        <button
           onClick={toggleSnap}
           className={`px-2 py-0.5 rounded border transition-colors ${
             snapEnabled
