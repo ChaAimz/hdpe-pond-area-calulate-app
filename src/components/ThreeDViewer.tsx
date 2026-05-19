@@ -103,25 +103,26 @@ export default function ThreeDViewer() {
           <directionalLight position={[10, 20, 10]} intensity={0.8} />
           <directionalLight position={[-8, 5, -8]} intensity={0.3} color="#4488ff" />
 
-          {geo && (
-            <mesh geometry={geo}>
-              <meshStandardMaterial color="#1d4ed8" side={THREE.DoubleSide}
-                metalness={0.1} roughness={0.7} transparent opacity={0.92} />
-            </mesh>
-          )}
-
-          {rimPts.length > 0 && (
-            <Line points={rimPts} color="#93c5fd" lineWidth={2} />
-          )}
-          {floorRimPts.length > 0 && (
-            <Line points={floorRimPts} color="#60a5fa" lineWidth={1.5} />
-          )}
-          {slopeEdges.map((pts, i) => (
-            <Line key={`se${i}`} points={pts} color="#60a5fa" lineWidth={1} />
-          ))}
+          <group position={hasShape ? [-center.x, -center.y, -center.z] : [0, 0, 0]}>
+            {geo && (
+              <mesh geometry={geo}>
+                <meshStandardMaterial color="#1d4ed8" side={THREE.DoubleSide}
+                  metalness={0.1} roughness={0.7} transparent opacity={0.92} />
+              </mesh>
+            )}
+            {rimPts.length > 0 && (
+              <Line points={rimPts} color="#93c5fd" lineWidth={2} />
+            )}
+            {floorRimPts.length > 0 && (
+              <Line points={floorRimPts} color="#60a5fa" lineWidth={1.5} />
+            )}
+            {slopeEdges.map((pts, i) => (
+              <Line key={`se${i}`} points={pts} color="#60a5fa" lineWidth={1} />
+            ))}
+          </group>
 
           {showGrid && <gridHelper args={[50, 50, '#1e3a5f', '#1e293b']} />}
-          <FitCamera trigger={fitTrigger} center={center} radius={radius} />
+          <FitCamera trigger={fitTrigger} center={new THREE.Vector3()} radius={radius} />
         </Canvas>
       </div>
     </div>
