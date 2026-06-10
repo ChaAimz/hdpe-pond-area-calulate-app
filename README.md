@@ -4,6 +4,13 @@ Professional HDPE pond planning and area estimation tool built with React, TypeS
 It combines a 2D drawing workspace, a live 3D preview, material estimates, bilingual UI support,
 and PNG export for reporting or review.
 
+[![React](https://img.shields.io/badge/React-19.2.6-61DAFB?logo=react&logoColor=white)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-8.x-646CFF?logo=vite&logoColor=white)](https://vite.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.x-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![Three.js](https://img.shields.io/badge/Three.js-0.184-000000?logo=three.js&logoColor=white)](https://threejs.org/)
+[![Zustand](https://img.shields.io/badge/Zustand-5.x-FFCA28)](https://github.com/pmndrs/zustand)
+
 ## English Overview
 
 ### What this project does
