@@ -11,6 +11,10 @@ and PNG export for reporting or review.
 [![Three.js](https://img.shields.io/badge/Three.js-0.184-000000?logo=three.js&logoColor=white)](https://threejs.org/)
 [![Zustand](https://img.shields.io/badge/Zustand-5.x-FFCA28)](https://github.com/pmndrs/zustand)
 
+## Sample Program Preview
+
+![HDPE Pond Calculator preview](docs/screenshots/light-mode-fixed.png)
+
 ## English Overview
 
 ### What this project does
